@@ -1,0 +1,158 @@
+* {
+  padding:0;
+  margin:0;
+}
+body {
+	color: #eee;
+	background-color: #1d1e1a;
+  font-family: monospace;
+}
+h2 {
+  margin:20px 0 ;
+}
+input {
+  display: none;
+  visibility: hidden;
+}
+label {
+  display: block;
+  margin: 1px;
+  border-top: 0.5px solid #333430;
+  border-left: 1px solid #333430;
+  color: grey;
+}
+label:hover {
+  color: #bbb;
+}
+label::before {
+  content: "";
+  display: inline-block;
+  
+}
+a:link, a:visited {
+   color: #999;
+}
+a:hover {
+  color: #bbb;
+}
+li {
+  display: inline-block;
+  padding: 0 20px; 
+}
+ul {
+ text-align: center;
+}
+.indented {
+	padding-left: 5em;
+}
+.expand {
+  height: 0px;
+  overflow: auto;
+  border-bottom: 1px solid #333430;
+  border-left: 1px solid #333430;
+  1margin-left: 1em;
+  }
+
+#toggle0:checked ~ #expand0 {height: auto;}
+#toggle1:checked ~ #expand1 {height: auto;}
+#toggle2:checked ~ #expand2 {height: auto;}
+#toggle3:checked ~ #expand3 {height: auto;}
+#toggle4:checked ~ #expand4 {height: auto;}
+#toggle5:checked ~ #expand5 {height: auto;}
+#toggle6:checked ~ #expand6 {height: auto;}
+#toggle7:checked ~ #expand7 {height: auto;}
+#toggle8:checked ~ #expand8 {height: auto;}
+#toggle9:checked ~ #expand9 {height: auto;}
+#toggle10:checked ~ #expand10{height: auto;}
+#toggle11:checked ~ #expand11{height: auto;}
+#toggle12:checked ~ #expand12{height: auto;}
+#toggle13:checked ~ #expand13{height: auto;}
+#toggle14:checked ~ #expand14{height: auto;}
+#toggle15:checked ~ #expand15{height: auto;}
+#toggle16:checked ~ #expand16{height: auto;}
+#toggle17:checked ~ #expand17{height: auto;}
+#toggle18:checked ~ #expand18{height: auto;}
+#toggle19:checked ~ #expand19{height: auto;}
+#toggle20:checked ~ #expand20{height: auto;}
+#toggle21:checked ~ #expand21{height: auto;}
+#toggle22:checked ~ #expand22{height: auto;}
+#toggle23:checked ~ #expand23{height: auto;}
+#toggle24:checked ~ #expand24{height: auto;}
+#toggle25:checked ~ #expand25{height: auto;}
+#toggle26:checked ~ #expand26{height: auto;}
+#toggle27:checked ~ #expand27{height: auto;}
+#toggle28:checked ~ #expand28{height: auto;}
+#toggle29:checked ~ #expand29{height: auto;}
+#toggle30:checked ~ #expand30{height: auto;}
+#toggle31:checked ~ #expand31{height: auto;}
+#toggle32:checked ~ #expand32{height: auto;}
+#toggle33:checked ~ #expand33{height: auto;}
+#toggle34:checked ~ #expand34{height: auto;}
+#toggle35:checked ~ #expand35{height: auto;}
+#toggle36:checked ~ #expand36{height: auto;}
+#toggle37:checked ~ #expand37{height: auto;}
+#toggle38:checked ~ #expand38{height: auto;}
+#toggle39:checked ~ #expand39{height: auto;}
+#toggle40:checked ~ #expand40{height: auto;}
+#toggle41:checked ~ #expand41{height: auto;}
+#toggle42:checked ~ #expand42{height: auto;}
+#toggle43:checked ~ #expand43{height: auto;}
+#toggle44:checked ~ #expand44{height: auto;}
+#toggle45:checked ~ #expand45{height: auto;}
+#toggle46:checked ~ #expand46{height: auto;}
+#toggle47:checked ~ #expand47{height: auto;}
+#toggle48:checked ~ #expand48{height: auto;}
+#toggle49:checked ~ #expand49{height: auto;}
+#toggle50:checked ~ #expand50{height: auto;}
+#toggle51:checked ~ #expand51{height: auto;}
+#toggle52:checked ~ #expand52{height: auto;}
+#toggle53:checked ~ #expand53{height: auto;}
+#toggle54:checked ~ #expand54{height: auto;}
+#toggle55:checked ~ #expand55{height: auto;}
+#toggle56:checked ~ #expand56{height: auto;}
+#toggle57:checked ~ #expand57{height: auto;}
+#toggle58:checked ~ #expand58{height: auto;}
+#toggle59:checked ~ #expand59{height: auto;}
+#toggle60:checked ~ #expand60{height: auto;}
+#toggle61:checked ~ #expand61{height: auto;}
+#toggle62:checked ~ #expand62{height: auto;}
+#toggle63:checked ~ #expand63{height: auto;}
+#toggle64:checked ~ #expand64{height: auto;}
+#toggle65:checked ~ #expand65{height: auto;}
+#toggle66:checked ~ #expand66{height: auto;}
+#toggle67:checked ~ #expand67{height: auto;}
+#toggle68:checked ~ #expand68{height: auto;}
+#toggle69:checked ~ #expand69{height: auto;}
+#toggle70:checked ~ #expand70{height: auto;}
+#toggle71:checked ~ #expand71{height: auto;}
+#toggle72:checked ~ #expand72{height: auto;}
+#toggle73:checked ~ #expand73{height: auto;}
+#toggle74:checked ~ #expand74{height: auto;}
+#toggle75:checked ~ #expand75{height: auto;}
+#toggle76:checked ~ #expand76{height: auto;}
+#toggle77:checked ~ #expand77{height: auto;}
+#toggle78:checked ~ #expand78{height: auto;}
+#toggle79:checked ~ #expand79{height: auto;}
+#toggle80:checked ~ #expand80{height: auto;}
+#toggle81:checked ~ #expand81{height: auto;}
+#toggle82:checked ~ #expand82{height: auto;}
+#toggle83:checked ~ #expand83{height: auto;}
+#toggle84:checked ~ #expand84{height: auto;}
+#toggle85:checked ~ #expand85{height: auto;}
+#toggle86:checked ~ #expand86{height: auto;}
+#toggle87:checked ~ #expand87{height: auto;}
+#toggle88:checked ~ #expand88{height: auto;}
+#toggle89:checked ~ #expand89{height: auto;}
+#toggle90:checked ~ #expand90{height: auto;}
+#toggle91:checked ~ #expand91{height: auto;}
+#toggle92:checked ~ #expand92{height: auto;}
+#toggle93:checked ~ #expand93{height: auto;}
+#toggle94:checked ~ #expand94{height: auto;}
+#toggle95:checked ~ #expand95{height: auto;}
+#toggle96:checked ~ #expand96{height: auto;}
+#toggle97:checked ~ #expand97{height: auto;}
+#toggle98:checked ~ #expand98{height: auto;}
+#toggle99:checked ~ #expand99{height: auto;}
+
+/* should be enough? Highest is currently 92*/
+
