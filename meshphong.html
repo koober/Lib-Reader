@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-	<title>Lib Reader ( MESHLAMBERT )</title>
+	<title>Lib Reader ( MESHPHONG )</title>
 	<meta charset="utf-8">
 	<link rel="stylesheet" type="text/css" href="css/tomorrow-night.css">
 	<link rel="stylesheet" type="text/css" href="css/styles.css">
@@ -25,7 +25,7 @@ updated from dev branch 11 Dec 2017.
 <li><a href="shadow.html">shadow</a></li>
 </ul>
 
-<h2>lambert.uniforms</h2>
+<h2>phong.uniforms</h2>
 
 		<pre><code class='javascript'>uniforms: UniformsUtils.merge( [
 </code></pre>
@@ -87,10 +87,46 @@ updated from dev branch 11 Dec 2017.
 }</code></pre>
 </div></div><pre><code class="javascript"></code></pre>
 
-<input id="toggle7" type="checkbox"><label for="toggle7">/* UniformsLib.fog
+<input id="toggle7" type="checkbox"><label for="toggle7">/* UniformsLib.bumpmap
  */</label>
 
 <div id="expand7" class="expand"><div class="indented"><pre><code class="javascript">{
+	bumpMap: { value: null },
+	bumpScale: { value: 1 }
+}</code></pre>
+</div></div><pre><code class="javascript"></code></pre>
+
+<input id="toggle8" type="checkbox"><label for="toggle8">/* UniformsLib.normalmap
+ */</label>
+
+<div id="expand8" class="expand"><div class="indented"><pre><code class="javascript">{
+	normalMap: { value: null },
+	normalScale: { value: new Vector2( 1, 1 ) }
+}</code></pre>
+</div></div><pre><code class="javascript"></code></pre>
+
+<input id="toggle9" type="checkbox"><label for="toggle9">/* UniformsLib.displacementmap
+ */</label>
+
+<div id="expand9" class="expand"><div class="indented"><pre><code class="javascript">{
+	displacementMap: { value: null },
+	displacementScale: { value: 1 },
+	displacementBias: { value: 0 }
+}</code></pre>
+</div></div><pre><code class="javascript"></code></pre>
+
+<input id="toggle10" type="checkbox"><label for="toggle10">/* UniformsLib.gradientmap
+ */</label>
+
+<div id="expand10" class="expand"><div class="indented"><pre><code class="javascript">{
+	gradientMap: { value: null }
+}</code></pre>
+</div></div><pre><code class="javascript"></code></pre>
+
+<input id="toggle11" type="checkbox"><label for="toggle11">/* UniformsLib.fog
+ */</label>
+
+<div id="expand11" class="expand"><div class="indented"><pre><code class="javascript">{
 	fogDensity: { value: 0.00025 },
 	fogNear: { value: 1 },
 	fogFar: { value: 2000 },
@@ -98,10 +134,10 @@ updated from dev branch 11 Dec 2017.
 }</code></pre>
 </div></div><pre><code class="javascript"></code></pre>
 
-<input id="toggle8" type="checkbox"><label for="toggle8">/* UniformsLib.lights
+<input id="toggle12" type="checkbox"><label for="toggle12">/* UniformsLib.lights
  */</label>
 
-<div id="expand8" class="expand"><div class="indented"><pre><code class="javascript">{
+<div id="expand12" class="expand"><div class="indented"><pre><code class="javascript">{
 	ambientLightColor: { value: [] },
 	directionalLights: { value: [], properties: {
 	direction: {},
@@ -156,29 +192,31 @@ updated from dev branch 11 Dec 2017.
 	} }
 }</code></pre>
 </div></div><pre><code class="javascript">	{
-		emissive: { value: new Color( 0x000000 ) }
+		emissive: { value: new Color( 0x000000 ) },
+		specular: { value: new Color( 0x111111 ) },
+		shininess: { value: 30 }
 	}
 ] ),
 		</code></pre>
 
 
-<h2>meshlambert_vert.glsl</h2>
+<h2>meshphong_vert.glsl</h2>
 
-<pre><code class="glsl">#define LAMBERT
+<pre><code class="glsl">#define PHONG
 
-varying vec3 vLightFront;
+varying vec3 vViewPosition;
 
-#ifdef DOUBLE_SIDED
+#ifndef FLAT_SHADED
 
-	varying vec3 vLightBack;
+	varying vec3 vNormal;
 
 #endif
 
 </code></pre>
 
-<input id="toggle14" type="checkbox"><label class="" for="toggle14">/* common.glsl */</label>
+<input id="toggle20" type="checkbox"><label class="" for="toggle20">/* common.glsl */</label>
 
-<div id="expand14" class=" expand"><pre><code class="glsl">
+<div id="expand20" class=" expand"><pre><code class="glsl">
 #define PI 3.14159265359
 #define PI2 6.28318530718
 #define PI_HALF 1.5707963267949
@@ -276,9 +314,9 @@ float linearToRelativeLuminance( const in vec3 color ) {
 }
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle15" type="checkbox"><label class="" for="toggle15">/* uv_pars_vertex.glsl */</label>
+<input id="toggle21" type="checkbox"><label class="" for="toggle21">/* uv_pars_vertex.glsl */</label>
 
-<div id="expand15" class=" expand"><pre><code class="glsl">
+<div id="expand21" class=" expand"><pre><code class="glsl">
 #if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP )
 
 	varying vec2 vUv;
@@ -287,9 +325,9 @@ float linearToRelativeLuminance( const in vec3 color ) {
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle16" type="checkbox"><label class="" for="toggle16">/* uv2_pars_vertex.glsl */</label>
+<input id="toggle22" type="checkbox"><label class="" for="toggle22">/* uv2_pars_vertex.glsl */</label>
 
-<div id="expand16" class=" expand"><pre><code class="glsl">
+<div id="expand22" class=" expand"><pre><code class="glsl">
 #if defined( USE_LIGHTMAP ) || defined( USE_AOMAP )
 
 	attribute vec2 uv2;
@@ -297,9 +335,21 @@ float linearToRelativeLuminance( const in vec3 color ) {
 
 #endif</code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle17" type="checkbox"><label class="" for="toggle17">/* envmap_pars_vertex.glsl */</label>
+<input id="toggle23" type="checkbox"><label class="" for="toggle23">/* displacementmap_pars_vertex.glsl */</label>
 
-<div id="expand17" class=" expand"><pre><code class="glsl">
+<div id="expand23" class=" expand"><pre><code class="glsl">
+#ifdef USE_DISPLACEMENTMAP
+
+	uniform sampler2D displacementMap;
+	uniform float displacementScale;
+	uniform float displacementBias;
+
+#endif
+</code></pre></div><pre><code class="glsl"></code></pre>
+
+<input id="toggle24" type="checkbox"><label class="" for="toggle24">/* envmap_pars_vertex.glsl */</label>
+
+<div id="expand24" class=" expand"><pre><code class="glsl">
 #ifdef USE_ENVMAP
 
 	#if defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( PHONG )
@@ -315,617 +365,18 @@ float linearToRelativeLuminance( const in vec3 color ) {
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle18" type="checkbox"><label class="" for="toggle18">/* bsdfs.glsl */</label>
+<input id="toggle25" type="checkbox"><label class="" for="toggle25">/* color_pars_vertex.glsl */</label>
 
-<div id="expand18" class=" expand"><pre><code class="glsl">
-float punctualLightIntensityToIrradianceFactor( const in float lightDistance, const in float cutoffDistance, const in float decayExponent ) {
-
-	if( decayExponent > 0.0 ) {
-
-#if defined ( PHYSICALLY_CORRECT_LIGHTS )
-
-		// based upon Frostbite 3 Moving to Physically-based Rendering
-		// page 32, equation 26: E[window1]
-		// https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf
-		// this is intended to be used on spot and point lights who are represented as luminous intensity
-		// but who must be converted to luminous irradiance for surface lighting calculation
-		float distanceFalloff = 1.0 / max( pow( lightDistance, decayExponent ), 0.01 );
-		float maxDistanceCutoffFactor = pow2( saturate( 1.0 - pow4( lightDistance / cutoffDistance ) ) );
-		return distanceFalloff * maxDistanceCutoffFactor;
-
-#else
-
-		return pow( saturate( -lightDistance / cutoffDistance + 1.0 ), decayExponent );
-
-#endif
-
-	}
-
-	return 1.0;
-
-}
-
-vec3 BRDF_Diffuse_Lambert( const in vec3 diffuseColor ) {
-
-	return RECIPROCAL_PI * diffuseColor;
-
-} // validated
-
-vec3 F_Schlick( const in vec3 specularColor, const in float dotLH ) {
-
-	// Original approximation by Christophe Schlick '94
-	// float fresnel = pow( 1.0 - dotLH, 5.0 );
-
-	// Optimized variant (presented by Epic at SIGGRAPH '13)
-	// https://cdn2.unrealengine.com/Resources/files/2013SiggraphPresentationsNotes-26915738.pdf
-	float fresnel = exp2( ( -5.55473 * dotLH - 6.98316 ) * dotLH );
-
-	return ( 1.0 - specularColor ) * fresnel + specularColor;
-
-} // validated
-
-// Microfacet Models for Refraction through Rough Surfaces - equation (34)
-// http://graphicrants.blogspot.com/2013/08/specular-brdf-reference.html
-// alpha is "roughness squared" in Disney’s reparameterization
-float G_GGX_Smith( const in float alpha, const in float dotNL, const in float dotNV ) {
-
-	// geometry term (normalized) = G(l)⋅G(v) / 4(n⋅l)(n⋅v)
-	// also see #12151
-
-	float a2 = pow2( alpha );
-
-	float gl = dotNL + sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNL ) );
-	float gv = dotNV + sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNV ) );
-
-	return 1.0 / ( gl * gv );
-
-} // validated
-
-// Moving Frostbite to Physically Based Rendering 3.0 - page 12, listing 2
-// https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf
-float G_GGX_SmithCorrelated( const in float alpha, const in float dotNL, const in float dotNV ) {
-
-	float a2 = pow2( alpha );
-
-	// dotNL and dotNV are explicitly swapped. This is not a mistake.
-	float gv = dotNL * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNV ) );
-	float gl = dotNV * sqrt( a2 + ( 1.0 - a2 ) * pow2( dotNL ) );
-
-	return 0.5 / max( gv + gl, EPSILON );
-
-}
-
-// Microfacet Models for Refraction through Rough Surfaces - equation (33)
-// http://graphicrants.blogspot.com/2013/08/specular-brdf-reference.html
-// alpha is "roughness squared" in Disney’s reparameterization
-float D_GGX( const in float alpha, const in float dotNH ) {
-
-	float a2 = pow2( alpha );
-
-	float denom = pow2( dotNH ) * ( a2 - 1.0 ) + 1.0; // avoid alpha = 0 with dotNH = 1
-
-	return RECIPROCAL_PI * a2 / pow2( denom );
-
-}
-
-// GGX Distribution, Schlick Fresnel, GGX-Smith Visibility
-vec3 BRDF_Specular_GGX( const in IncidentLight incidentLight, const in GeometricContext geometry, const in vec3 specularColor, const in float roughness ) {
-
-	float alpha = pow2( roughness ); // UE4's roughness
-
-	vec3 halfDir = normalize( incidentLight.direction + geometry.viewDir );
-
-	float dotNL = saturate( dot( geometry.normal, incidentLight.direction ) );
-	float dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );
-	float dotNH = saturate( dot( geometry.normal, halfDir ) );
-	float dotLH = saturate( dot( incidentLight.direction, halfDir ) );
-
-	vec3 F = F_Schlick( specularColor, dotLH );
-
-	float G = G_GGX_SmithCorrelated( alpha, dotNL, dotNV );
-
-	float D = D_GGX( alpha, dotNH );
-
-	return F * ( G * D );
-
-} // validated
-
-// Rect Area Light
-
-// Area light computation code adapted from:
-// Real-Time Polygonal-Light Shading with Linearly Transformed Cosines
-// By: Eric Heitz, Jonathan Dupuy, Stephen Hill and David Neubelt
-// https://drive.google.com/file/d/0BzvWIdpUpRx_d09ndGVjNVJzZjA/view
-// https://eheitzresearch.wordpress.com/415-2/
-// http://blog.selfshadow.com/sandbox/ltc.html
-
-vec2 LTC_Uv( const in vec3 N, const in vec3 V, const in float roughness ) {
-
-	const float LUT_SIZE  = 64.0;
-	const float LUT_SCALE = ( LUT_SIZE - 1.0 ) / LUT_SIZE;
-	const float LUT_BIAS  = 0.5 / LUT_SIZE;
-
-	float theta = acos( dot( N, V ) );
-
-	// Parameterization of texture:
-	// sqrt(roughness) -> [0,1]
-	// theta -> [0, PI/2]
-	vec2 uv = vec2(
-		sqrt( saturate( roughness ) ),
-		saturate( theta / ( 0.5 * PI ) ) );
-
-	// Ensure we don't have nonlinearities at the look-up table's edges
-	// see: http://http.developer.nvidia.com/GPUGems2/gpugems2_chapter24.html
-	//      "Shader Analysis" section
-	uv = uv * LUT_SCALE + LUT_BIAS;
-
-	return uv;
-
-}
-
-// Real-Time Area Lighting: a Journey from Research to Production
-// By: Stephen Hill & Eric Heitz
-// http://advances.realtimerendering.com/s2016/s2016_ltc_rnd.pdf
-// An approximation for the form factor of a clipped rectangle.
-float LTC_ClippedSphereFormFactor( const in vec3 f ) {
-
-	float l = length( f );
-
-	return max( ( l * l + f.z ) / ( l + 1.0 ), 0.0 );
-
-}
-
-// Real-Time Polygonal-Light Shading with Linearly Transformed Cosines
-// also Real-Time Area Lighting: a Journey from Research to Production
-// http://advances.realtimerendering.com/s2016/s2016_ltc_rnd.pdf
-// Normalization by 2*PI is incorporated in this function itself.
-// theta/sin(theta) is approximated by rational polynomial
-vec3 LTC_EdgeVectorFormFactor( const in vec3 v1, const in vec3 v2 ) {
-
-	float x = dot( v1, v2 );
-
-	float y = abs( x );
-	float a = 0.86267 + (0.49788 + 0.01436 * y ) * y;
-	float b = 3.45068 + (4.18814 + y) * y;
-	float v = a / b;
-
-	float theta_sintheta = (x > 0.0) ? v : 0.5 * inversesqrt( 1.0 - x * x ) - v;
-
-	return cross( v1, v2 ) * theta_sintheta;
-
-}
-
-vec3 LTC_Evaluate( const in vec3 N, const in vec3 V, const in vec3 P, const in mat3 mInv, const in vec3 rectCoords[ 4 ] ) {
-
-	// bail if point is on back side of plane of light
-	// assumes ccw winding order of light vertices
-	vec3 v1 = rectCoords[ 1 ] - rectCoords[ 0 ];
-	vec3 v2 = rectCoords[ 3 ] - rectCoords[ 0 ];
-	vec3 lightNormal = cross( v1, v2 );
-
-	if( dot( lightNormal, P - rectCoords[ 0 ] ) < 0.0 ) return vec3( 0.0 );
-
-	// construct orthonormal basis around N
-	vec3 T1, T2;
-	T1 = normalize( V - N * dot( V, N ) );
-	T2 = - cross( N, T1 ); // negated from paper; possibly due to a different assumed handedness of world coordinate system
-
-	// compute transform
-	mat3 mat = mInv * transposeMat3( mat3( T1, T2, N ) );
-
-	// transform rect
-	vec3 coords[ 4 ];
-	coords[ 0 ] = mat * ( rectCoords[ 0 ] - P );
-	coords[ 1 ] = mat * ( rectCoords[ 1 ] - P );
-	coords[ 2 ] = mat * ( rectCoords[ 2 ] - P );
-	coords[ 3 ] = mat * ( rectCoords[ 3 ] - P );
-
-	// project rect onto sphere
-	coords[ 0 ] = normalize( coords[ 0 ] );
-	coords[ 1 ] = normalize( coords[ 1 ] );
-	coords[ 2 ] = normalize( coords[ 2 ] );
-	coords[ 3 ] = normalize( coords[ 3 ] );
-
-	// calculate vector form factor
-	vec3 vectorFormFactor = vec3( 0.0 );
-	vectorFormFactor += LTC_EdgeVectorFormFactor( coords[ 0 ], coords[ 1 ] );
-	vectorFormFactor += LTC_EdgeVectorFormFactor( coords[ 1 ], coords[ 2 ] );
-	vectorFormFactor += LTC_EdgeVectorFormFactor( coords[ 2 ], coords[ 3 ] );
-	vectorFormFactor += LTC_EdgeVectorFormFactor( coords[ 3 ], coords[ 0 ] );
-
-	// adjust for horizon clipping
-	vec3 result = vec3( LTC_ClippedSphereFormFactor( vectorFormFactor ) );
-
-	return result;
-
-}
-
-// End Rect Area Light
-
-// ref: https://www.unrealengine.com/blog/physically-based-shading-on-mobile - environmentBRDF for GGX on mobile
-vec3 BRDF_Specular_GGX_Environment( const in GeometricContext geometry, const in vec3 specularColor, const in float roughness ) {
-
-	float dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );
-
-	const vec4 c0 = vec4( - 1, - 0.0275, - 0.572, 0.022 );
-
-	const vec4 c1 = vec4( 1, 0.0425, 1.04, - 0.04 );
-
-	vec4 r = roughness * c0 + c1;
-
-	float a004 = min( r.x * r.x, exp2( - 9.28 * dotNV ) ) * r.x + r.y;
-
-	vec2 AB = vec2( -1.04, 1.04 ) * a004 + r.zw;
-
-	return specularColor * AB.x + AB.y;
-
-} // validated
-
-
-float G_BlinnPhong_Implicit( /* const in float dotNL, const in float dotNV */ ) {
-
-	// geometry term is (n dot l)(n dot v) / 4(n dot l)(n dot v)
-	return 0.25;
-
-}
-
-float D_BlinnPhong( const in float shininess, const in float dotNH ) {
-
-	return RECIPROCAL_PI * ( shininess * 0.5 + 1.0 ) * pow( dotNH, shininess );
-
-}
-
-vec3 BRDF_Specular_BlinnPhong( const in IncidentLight incidentLight, const in GeometricContext geometry, const in vec3 specularColor, const in float shininess ) {
-
-	vec3 halfDir = normalize( incidentLight.direction + geometry.viewDir );
-
-	//float dotNL = saturate( dot( geometry.normal, incidentLight.direction ) );
-	//float dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );
-	float dotNH = saturate( dot( geometry.normal, halfDir ) );
-	float dotLH = saturate( dot( incidentLight.direction, halfDir ) );
-
-	vec3 F = F_Schlick( specularColor, dotLH );
-
-	float G = G_BlinnPhong_Implicit( /* dotNL, dotNV */ );
-
-	float D = D_BlinnPhong( shininess, dotNH );
-
-	return F * ( G * D );
-
-} // validated
-
-// source: http://simonstechblog.blogspot.ca/2011/12/microfacet-brdf.html
-float GGXRoughnessToBlinnExponent( const in float ggxRoughness ) {
-	return ( 2.0 / pow2( ggxRoughness + 0.0001 ) - 2.0 );
-}
-
-float BlinnExponentToGGXRoughness( const in float blinnExponent ) {
-	return sqrt( 2.0 / ( blinnExponent + 2.0 ) );
-}
-</code></pre></div><pre><code class="glsl"></code></pre>
-
-<input id="toggle19" type="checkbox"><label class="" for="toggle19">/* lights_pars.glsl */</label>
-
-<div id="expand19" class=" expand"><pre><code class="glsl">
-uniform vec3 ambientLightColor;
-
-vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
-
-	vec3 irradiance = ambientLightColor;
-
-	#ifndef PHYSICALLY_CORRECT_LIGHTS
-
-		irradiance *= PI;
-
-	#endif
-
-	return irradiance;
-
-}
-
-#if NUM_DIR_LIGHTS > 0
-
-	struct DirectionalLight {
-		vec3 direction;
-		vec3 color;
-
-		int shadow;
-		float shadowBias;
-		float shadowRadius;
-		vec2 shadowMapSize;
-	};
-
-	uniform DirectionalLight directionalLights[ NUM_DIR_LIGHTS ];
-
-	void getDirectionalDirectLightIrradiance( const in DirectionalLight directionalLight, const in GeometricContext geometry, out IncidentLight directLight ) {
-
-		directLight.color = directionalLight.color;
-		directLight.direction = directionalLight.direction;
-		directLight.visible = true;
-
-	}
-
-#endif
-
-
-#if NUM_POINT_LIGHTS > 0
-
-	struct PointLight {
-		vec3 position;
-		vec3 color;
-		float distance;
-		float decay;
-
-		int shadow;
-		float shadowBias;
-		float shadowRadius;
-		vec2 shadowMapSize;
-		float shadowCameraNear;
-		float shadowCameraFar;
-	};
-
-	uniform PointLight pointLights[ NUM_POINT_LIGHTS ];
-
-	// directLight is an out parameter as having it as a return value caused compiler errors on some devices
-	void getPointDirectLightIrradiance( const in PointLight pointLight, const in GeometricContext geometry, out IncidentLight directLight ) {
-
-		vec3 lVector = pointLight.position - geometry.position;
-		directLight.direction = normalize( lVector );
-
-		float lightDistance = length( lVector );
-
-		directLight.color = pointLight.color;
-		directLight.color *= punctualLightIntensityToIrradianceFactor( lightDistance, pointLight.distance, pointLight.decay );
-		directLight.visible = ( directLight.color != vec3( 0.0 ) );
-
-	}
-
-#endif
-
-
-#if NUM_SPOT_LIGHTS > 0
-
-	struct SpotLight {
-		vec3 position;
-		vec3 direction;
-		vec3 color;
-		float distance;
-		float decay;
-		float coneCos;
-		float penumbraCos;
-
-		int shadow;
-		float shadowBias;
-		float shadowRadius;
-		vec2 shadowMapSize;
-	};
-
-	uniform SpotLight spotLights[ NUM_SPOT_LIGHTS ];
-
-	// directLight is an out parameter as having it as a return value caused compiler errors on some devices
-	void getSpotDirectLightIrradiance( const in SpotLight spotLight, const in GeometricContext geometry, out IncidentLight directLight  ) {
-
-		vec3 lVector = spotLight.position - geometry.position;
-		directLight.direction = normalize( lVector );
-
-		float lightDistance = length( lVector );
-		float angleCos = dot( directLight.direction, spotLight.direction );
-
-		if ( angleCos > spotLight.coneCos ) {
-
-			float spotEffect = smoothstep( spotLight.coneCos, spotLight.penumbraCos, angleCos );
-
-			directLight.color = spotLight.color;
-			directLight.color *= spotEffect * punctualLightIntensityToIrradianceFactor( lightDistance, spotLight.distance, spotLight.decay );
-			directLight.visible = true;
-
-		} else {
-
-			directLight.color = vec3( 0.0 );
-			directLight.visible = false;
-
-		}
-	}
-
-#endif
-
-
-#if NUM_RECT_AREA_LIGHTS > 0
-
-	struct RectAreaLight {
-		vec3 color;
-		vec3 position;
-		vec3 halfWidth;
-		vec3 halfHeight;
-	};
-
-	// Pre-computed values of LinearTransformedCosine approximation of BRDF
-	// BRDF approximation Texture is 64x64
-	uniform sampler2D ltcMat; // RGBA Float
-	uniform sampler2D ltcMag; // Alpha Float (only has w component)
-
-	uniform RectAreaLight rectAreaLights[ NUM_RECT_AREA_LIGHTS ];
-
-#endif
-
-
-#if NUM_HEMI_LIGHTS > 0
-
-	struct HemisphereLight {
-		vec3 direction;
-		vec3 skyColor;
-		vec3 groundColor;
-	};
-
-	uniform HemisphereLight hemisphereLights[ NUM_HEMI_LIGHTS ];
-
-	vec3 getHemisphereLightIrradiance( const in HemisphereLight hemiLight, const in GeometricContext geometry ) {
-
-		float dotNL = dot( geometry.normal, hemiLight.direction );
-		float hemiDiffuseWeight = 0.5 * dotNL + 0.5;
-
-		vec3 irradiance = mix( hemiLight.groundColor, hemiLight.skyColor, hemiDiffuseWeight );
-
-		#ifndef PHYSICALLY_CORRECT_LIGHTS
-
-			irradiance *= PI;
-
-		#endif
-
-		return irradiance;
-
-	}
-
-#endif
-
-
-#if defined( USE_ENVMAP ) && defined( PHYSICAL )
-
-	vec3 getLightProbeIndirectIrradiance( /*const in SpecularLightProbe specularLightProbe,*/ const in GeometricContext geometry, const in int maxMIPLevel ) {
-
-		vec3 worldNormal = inverseTransformDirection( geometry.normal, viewMatrix );
-
-		#ifdef ENVMAP_TYPE_CUBE
-
-			vec3 queryVec = vec3( flipEnvMap * worldNormal.x, worldNormal.yz );
-
-			// TODO: replace with properly filtered cubemaps and access the irradiance LOD level, be it the last LOD level
-			// of a specular cubemap, or just the default level of a specially created irradiance cubemap.
-
-			#ifdef TEXTURE_LOD_EXT
-
-				vec4 envMapColor = textureCubeLodEXT( envMap, queryVec, float( maxMIPLevel ) );
-
-			#else
-
-				// force the bias high to get the last LOD level as it is the most blurred.
-				vec4 envMapColor = textureCube( envMap, queryVec, float( maxMIPLevel ) );
-
-			#endif
-
-			envMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;
-
-		#elif defined( ENVMAP_TYPE_CUBE_UV )
-
-			vec3 queryVec = vec3( flipEnvMap * worldNormal.x, worldNormal.yz );
-			vec4 envMapColor = textureCubeUV( queryVec, 1.0 );
-
-		#else
-
-			vec4 envMapColor = vec4( 0.0 );
-
-		#endif
-
-		return PI * envMapColor.rgb * envMapIntensity;
-
-	}
-
-	// taken from here: http://casual-effects.blogspot.ca/2011/08/plausible-environment-lighting-in-two.html
-	float getSpecularMIPLevel( const in float blinnShininessExponent, const in int maxMIPLevel ) {
-
-		//float envMapWidth = pow( 2.0, maxMIPLevelScalar );
-		//float desiredMIPLevel = log2( envMapWidth * sqrt( 3.0 ) ) - 0.5 * log2( pow2( blinnShininessExponent ) + 1.0 );
-
-		float maxMIPLevelScalar = float( maxMIPLevel );
-		float desiredMIPLevel = maxMIPLevelScalar + 0.79248 - 0.5 * log2( pow2( blinnShininessExponent ) + 1.0 );
-
-		// clamp to allowable LOD ranges.
-		return clamp( desiredMIPLevel, 0.0, maxMIPLevelScalar );
-
-	}
-
-	vec3 getLightProbeIndirectRadiance( /*const in SpecularLightProbe specularLightProbe,*/ const in GeometricContext geometry, const in float blinnShininessExponent, const in int maxMIPLevel ) {
-
-		#ifdef ENVMAP_MODE_REFLECTION
-
-			vec3 reflectVec = reflect( -geometry.viewDir, geometry.normal );
-
-		#else
-
-			vec3 reflectVec = refract( -geometry.viewDir, geometry.normal, refractionRatio );
-
-		#endif
-
-		reflectVec = inverseTransformDirection( reflectVec, viewMatrix );
-
-		float specularMIPLevel = getSpecularMIPLevel( blinnShininessExponent, maxMIPLevel );
-
-		#ifdef ENVMAP_TYPE_CUBE
-
-			vec3 queryReflectVec = vec3( flipEnvMap * reflectVec.x, reflectVec.yz );
-
-			#ifdef TEXTURE_LOD_EXT
-
-				vec4 envMapColor = textureCubeLodEXT( envMap, queryReflectVec, specularMIPLevel );
-
-			#else
-
-				vec4 envMapColor = textureCube( envMap, queryReflectVec, specularMIPLevel );
-
-			#endif
-
-			envMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;
-
-		#elif defined( ENVMAP_TYPE_CUBE_UV )
-
-			vec3 queryReflectVec = vec3( flipEnvMap * reflectVec.x, reflectVec.yz );
-			vec4 envMapColor = textureCubeUV(queryReflectVec, BlinnExponentToGGXRoughness(blinnShininessExponent));
-
-		#elif defined( ENVMAP_TYPE_EQUIREC )
-
-			vec2 sampleUV;
-			sampleUV.y = asin( clamp( reflectVec.y, - 1.0, 1.0 ) ) * RECIPROCAL_PI + 0.5;
-			sampleUV.x = atan( reflectVec.z, reflectVec.x ) * RECIPROCAL_PI2 + 0.5;
-
-			#ifdef TEXTURE_LOD_EXT
-
-				vec4 envMapColor = texture2DLodEXT( envMap, sampleUV, specularMIPLevel );
-
-			#else
-
-				vec4 envMapColor = texture2D( envMap, sampleUV, specularMIPLevel );
-
-			#endif
-
-			envMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;
-
-		#elif defined( ENVMAP_TYPE_SPHERE )
-
-			vec3 reflectView = normalize( ( viewMatrix * vec4( reflectVec, 0.0 ) ).xyz + vec3( 0.0,0.0,1.0 ) );
-
-			#ifdef TEXTURE_LOD_EXT
-
-				vec4 envMapColor = texture2DLodEXT( envMap, reflectView.xy * 0.5 + 0.5, specularMIPLevel );
-
-			#else
-
-				vec4 envMapColor = texture2D( envMap, reflectView.xy * 0.5 + 0.5, specularMIPLevel );
-
-			#endif
-
-			envMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;
-
-		#endif
-
-		return envMapColor.rgb * envMapIntensity;
-
-	}
-
-#endif
-</code></pre></div><pre><code class="glsl"></code></pre>
-
-<input id="toggle20" type="checkbox"><label class="" for="toggle20">/* color_pars_vertex.glsl */</label>
-
-<div id="expand20" class=" expand"><pre><code class="glsl">
+<div id="expand25" class=" expand"><pre><code class="glsl">
 #ifdef USE_COLOR
 
 	varying vec3 vColor;
 
 #endif</code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle21" type="checkbox"><label class="" for="toggle21">/* fog_pars_vertex.glsl */</label>
+<input id="toggle26" type="checkbox"><label class="" for="toggle26">/* fog_pars_vertex.glsl */</label>
 
-<div id="expand21" class=" expand"><pre><code class="glsl">
+<div id="expand26" class=" expand"><pre><code class="glsl">
 #ifdef USE_FOG
 
   varying float fogDepth;
@@ -933,9 +384,9 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle22" type="checkbox"><label class="" for="toggle22">/* morphtarget_pars_vertex.glsl */</label>
+<input id="toggle27" type="checkbox"><label class="" for="toggle27">/* morphtarget_pars_vertex.glsl */</label>
 
-<div id="expand22" class=" expand"><pre><code class="glsl">
+<div id="expand27" class=" expand"><pre><code class="glsl">
 #ifdef USE_MORPHTARGETS
 
 	#ifndef USE_MORPHNORMALS
@@ -950,9 +401,9 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 
 #endif</code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle23" type="checkbox"><label class="" for="toggle23">/* skinning_pars_vertex.glsl */</label>
+<input id="toggle28" type="checkbox"><label class="" for="toggle28">/* skinning_pars_vertex.glsl */</label>
 
-<div id="expand23" class=" expand"><pre><code class="glsl">
+<div id="expand28" class=" expand"><pre><code class="glsl">
 #ifdef USE_SKINNING
 
 	uniform mat4 bindMatrix;
@@ -1001,9 +452,9 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle24" type="checkbox"><label class="" for="toggle24">/* shadowmap_pars_vertex.glsl */</label>
+<input id="toggle29" type="checkbox"><label class="" for="toggle29">/* shadowmap_pars_vertex.glsl */</label>
 
-<div id="expand24" class=" expand"><pre><code class="glsl">
+<div id="expand29" class=" expand"><pre><code class="glsl">
 #ifdef USE_SHADOWMAP
 
 	#if NUM_DIR_LIGHTS > 0
@@ -1038,9 +489,9 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle25" type="checkbox"><label class="" for="toggle25">/* logdepthbuf_pars_vertex.glsl */</label>
+<input id="toggle30" type="checkbox"><label class="" for="toggle30">/* logdepthbuf_pars_vertex.glsl */</label>
 
-<div id="expand25" class=" expand"><pre><code class="glsl">
+<div id="expand30" class=" expand"><pre><code class="glsl">
 #ifdef USE_LOGDEPTHBUF
 
 	#ifdef USE_LOGDEPTHBUF_EXT
@@ -1053,9 +504,9 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 
 #endif</code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle26" type="checkbox"><label class="" for="toggle26">/* clipping_planes_pars_vertex.glsl */</label>
+<input id="toggle31" type="checkbox"><label class="" for="toggle31">/* clipping_planes_pars_vertex.glsl */</label>
 
-<div id="expand26" class=" expand"><pre><code class="glsl">
+<div id="expand31" class=" expand"><pre><code class="glsl">
 #if NUM_CLIPPING_PLANES > 0 && ! defined( PHYSICAL ) && ! defined( PHONG )
 	varying vec3 vViewPosition;
 #endif
@@ -1065,27 +516,27 @@ void main() {
 <pre><code class="glsl">
 </code></pre>
 
-<input id="toggle27" type="checkbox"><label class="indented" for="toggle27">/* uv_vertex.glsl */</label>
+<input id="toggle32" type="checkbox"><label class="indented" for="toggle32">/* uv_vertex.glsl */</label>
 
-<div id="expand27" class="indented expand"><pre><code class="glsl">
+<div id="expand32" class="indented expand"><pre><code class="glsl">
 #if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP )
 
 	vUv = ( uvTransform * vec3( uv, 1 ) ).xy;
 
 #endif</code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle28" type="checkbox"><label class="indented" for="toggle28">/* uv2_vertex.glsl */</label>
+<input id="toggle33" type="checkbox"><label class="indented" for="toggle33">/* uv2_vertex.glsl */</label>
 
-<div id="expand28" class="indented expand"><pre><code class="glsl">
+<div id="expand33" class="indented expand"><pre><code class="glsl">
 #if defined( USE_LIGHTMAP ) || defined( USE_AOMAP )
 
 	vUv2 = uv2;
 
 #endif</code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle29" type="checkbox"><label class="indented" for="toggle29">/* color_vertex.glsl */</label>
+<input id="toggle34" type="checkbox"><label class="indented" for="toggle34">/* color_vertex.glsl */</label>
 
-<div id="expand29" class="indented expand"><pre><code class="glsl">
+<div id="expand34" class="indented expand"><pre><code class="glsl">
 #ifdef USE_COLOR
 
 	vColor.xyz = color.xyz;
@@ -1093,16 +544,16 @@ void main() {
 #endif</code></pre></div><pre><code class="glsl">
 </code></pre>
 
-<input id="toggle30" type="checkbox"><label class="indented" for="toggle30">/* beginnormal_vertex.glsl */</label>
+<input id="toggle35" type="checkbox"><label class="indented" for="toggle35">/* beginnormal_vertex.glsl */</label>
 
-<div id="expand30" class="indented expand"><pre><code class="glsl">
+<div id="expand35" class="indented expand"><pre><code class="glsl">
 
 vec3 objectNormal = vec3( normal );
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle31" type="checkbox"><label class="indented" for="toggle31">/* morphnormal_vertex.glsl */</label>
+<input id="toggle36" type="checkbox"><label class="indented" for="toggle36">/* morphnormal_vertex.glsl */</label>
 
-<div id="expand31" class="indented expand"><pre><code class="glsl">
+<div id="expand36" class="indented expand"><pre><code class="glsl">
 #ifdef USE_MORPHNORMALS
 
 	objectNormal += ( morphNormal0 - normal ) * morphTargetInfluences[ 0 ];
@@ -1113,9 +564,9 @@ vec3 objectNormal = vec3( normal );
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle32" type="checkbox"><label class="indented" for="toggle32">/* skinbase_vertex.glsl */</label>
+<input id="toggle37" type="checkbox"><label class="indented" for="toggle37">/* skinbase_vertex.glsl */</label>
 
-<div id="expand32" class="indented expand"><pre><code class="glsl">
+<div id="expand37" class="indented expand"><pre><code class="glsl">
 #ifdef USE_SKINNING
 
 	mat4 boneMatX = getBoneMatrix( skinIndex.x );
@@ -1125,9 +576,9 @@ vec3 objectNormal = vec3( normal );
 
 #endif</code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle33" type="checkbox"><label class="indented" for="toggle33">/* skinnormal_vertex.glsl */</label>
+<input id="toggle38" type="checkbox"><label class="indented" for="toggle38">/* skinnormal_vertex.glsl */</label>
 
-<div id="expand33" class="indented expand"><pre><code class="glsl">
+<div id="expand38" class="indented expand"><pre><code class="glsl">
 #ifdef USE_SKINNING
 
 	mat4 skinMatrix = mat4( 0.0 );
@@ -1142,9 +593,9 @@ vec3 objectNormal = vec3( normal );
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle34" type="checkbox"><label class="indented" for="toggle34">/* defaultnormal_vertex.glsl */</label>
+<input id="toggle39" type="checkbox"><label class="indented" for="toggle39">/* defaultnormal_vertex.glsl */</label>
 
-<div id="expand34" class="indented expand"><pre><code class="glsl">
+<div id="expand39" class="indented expand"><pre><code class="glsl">
 vec3 transformedNormal = normalMatrix * objectNormal;
 
 #ifdef FLIP_SIDED
@@ -1153,18 +604,24 @@ vec3 transformedNormal = normalMatrix * objectNormal;
 
 #endif
 </code></pre></div><pre><code class="glsl">
+#ifndef FLAT_SHADED // Normal computed with derivatives when FLAT_SHADED
+
+	vNormal = normalize( transformedNormal );
+
+#endif
+
 </code></pre>
 
-<input id="toggle35" type="checkbox"><label class="indented" for="toggle35">/* begin_vertex.glsl */</label>
+<input id="toggle40" type="checkbox"><label class="indented" for="toggle40">/* begin_vertex.glsl */</label>
 
-<div id="expand35" class="indented expand"><pre><code class="glsl">
+<div id="expand40" class="indented expand"><pre><code class="glsl">
 
 vec3 transformed = vec3( position );
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle36" type="checkbox"><label class="indented" for="toggle36">/* morphtarget_vertex.glsl */</label>
+<input id="toggle41" type="checkbox"><label class="indented" for="toggle41">/* morphtarget_vertex.glsl */</label>
 
-<div id="expand36" class="indented expand"><pre><code class="glsl">
+<div id="expand41" class="indented expand"><pre><code class="glsl">
 #ifdef USE_MORPHTARGETS
 
 	transformed += ( morphTarget0 - position ) * morphTargetInfluences[ 0 ];
@@ -1184,9 +641,9 @@ vec3 transformed = vec3( position );
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle37" type="checkbox"><label class="indented" for="toggle37">/* skinning_vertex.glsl */</label>
+<input id="toggle42" type="checkbox"><label class="indented" for="toggle42">/* skinning_vertex.glsl */</label>
 
-<div id="expand37" class="indented expand"><pre><code class="glsl">
+<div id="expand42" class="indented expand"><pre><code class="glsl">
 #ifdef USE_SKINNING
 
 	vec4 skinVertex = bindMatrix * vec4( transformed, 1.0 );
@@ -1202,17 +659,27 @@ vec3 transformed = vec3( position );
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle38" type="checkbox"><label class="indented" for="toggle38">/* project_vertex.glsl */</label>
+<input id="toggle43" type="checkbox"><label class="indented" for="toggle43">/* displacementmap_vertex.glsl */</label>
 
-<div id="expand38" class="indented expand"><pre><code class="glsl">
+<div id="expand43" class="indented expand"><pre><code class="glsl">
+#ifdef USE_DISPLACEMENTMAP
+
+	transformed += normalize( objectNormal ) * ( texture2D( displacementMap, uv ).x * displacementScale + displacementBias );
+
+#endif
+</code></pre></div><pre><code class="glsl"></code></pre>
+
+<input id="toggle44" type="checkbox"><label class="indented" for="toggle44">/* project_vertex.glsl */</label>
+
+<div id="expand44" class="indented expand"><pre><code class="glsl">
 vec4 mvPosition = modelViewMatrix * vec4( transformed, 1.0 );
 
 gl_Position = projectionMatrix * mvPosition;
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle39" type="checkbox"><label class="indented" for="toggle39">/* logdepthbuf_vertex.glsl */</label>
+<input id="toggle45" type="checkbox"><label class="indented" for="toggle45">/* logdepthbuf_vertex.glsl */</label>
 
-<div id="expand39" class="indented expand"><pre><code class="glsl">
+<div id="expand45" class="indented expand"><pre><code class="glsl">
 #ifdef USE_LOGDEPTHBUF
 
 	#ifdef USE_LOGDEPTHBUF_EXT
@@ -1230,19 +697,21 @@ gl_Position = projectionMatrix * mvPosition;
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle40" type="checkbox"><label class="indented" for="toggle40">/* clipping_planes_vertex.glsl */</label>
+<input id="toggle46" type="checkbox"><label class="indented" for="toggle46">/* clipping_planes_vertex.glsl */</label>
 
-<div id="expand40" class="indented expand"><pre><code class="glsl">
+<div id="expand46" class="indented expand"><pre><code class="glsl">
 #if NUM_CLIPPING_PLANES > 0 && ! defined( PHYSICAL ) && ! defined( PHONG )
 	vViewPosition = - mvPosition.xyz;
 #endif
 
 </code></pre></div><pre><code class="glsl">
+	vViewPosition = - mvPosition.xyz;
+
 </code></pre>
 
-<input id="toggle41" type="checkbox"><label class="indented" for="toggle41">/* worldpos_vertex.glsl */</label>
+<input id="toggle47" type="checkbox"><label class="indented" for="toggle47">/* worldpos_vertex.glsl */</label>
 
-<div id="expand41" class="indented expand"><pre><code class="glsl">
+<div id="expand47" class="indented expand"><pre><code class="glsl">
 #if defined( USE_ENVMAP ) || defined( DISTANCE ) || defined ( USE_SHADOWMAP )
 
 	vec4 worldPosition = modelMatrix * vec4( transformed, 1.0 );
@@ -1250,9 +719,9 @@ gl_Position = projectionMatrix * mvPosition;
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle42" type="checkbox"><label class="indented" for="toggle42">/* envmap_vertex.glsl */</label>
+<input id="toggle48" type="checkbox"><label class="indented" for="toggle48">/* envmap_vertex.glsl */</label>
 
-<div id="expand42" class="indented expand"><pre><code class="glsl">
+<div id="expand48" class="indented expand"><pre><code class="glsl">
 #ifdef USE_ENVMAP
 
 	#if defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( PHONG )
@@ -1280,125 +749,9 @@ gl_Position = projectionMatrix * mvPosition;
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle43" type="checkbox"><label class="indented" for="toggle43">/* lights_lambert_vertex.glsl */</label>
+<input id="toggle49" type="checkbox"><label class="indented" for="toggle49">/* shadowmap_vertex.glsl */</label>
 
-<div id="expand43" class="indented expand"><pre><code class="glsl">
-vec3 diffuse = vec3( 1.0 );
-
-GeometricContext geometry;
-geometry.position = mvPosition.xyz;
-geometry.normal = normalize( transformedNormal );
-geometry.viewDir = normalize( -mvPosition.xyz );
-
-GeometricContext backGeometry;
-backGeometry.position = geometry.position;
-backGeometry.normal = -geometry.normal;
-backGeometry.viewDir = geometry.viewDir;
-
-vLightFront = vec3( 0.0 );
-
-#ifdef DOUBLE_SIDED
-	vLightBack = vec3( 0.0 );
-#endif
-
-IncidentLight directLight;
-float dotNL;
-vec3 directLightColor_Diffuse;
-
-#if NUM_POINT_LIGHTS > 0
-
-	for ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {
-
-		getPointDirectLightIrradiance( pointLights[ i ], geometry, directLight );
-
-		dotNL = dot( geometry.normal, directLight.direction );
-		directLightColor_Diffuse = PI * directLight.color;
-
-		vLightFront += saturate( dotNL ) * directLightColor_Diffuse;
-
-		#ifdef DOUBLE_SIDED
-
-			vLightBack += saturate( -dotNL ) * directLightColor_Diffuse;
-
-		#endif
-
-	}
-
-#endif
-
-#if NUM_SPOT_LIGHTS > 0
-
-	for ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {
-
-		getSpotDirectLightIrradiance( spotLights[ i ], geometry, directLight );
-
-		dotNL = dot( geometry.normal, directLight.direction );
-		directLightColor_Diffuse = PI * directLight.color;
-
-		vLightFront += saturate( dotNL ) * directLightColor_Diffuse;
-
-		#ifdef DOUBLE_SIDED
-
-			vLightBack += saturate( -dotNL ) * directLightColor_Diffuse;
-
-		#endif
-	}
-
-#endif
-
-/*
-#if NUM_RECT_AREA_LIGHTS > 0
-
-	for ( int i = 0; i < NUM_RECT_AREA_LIGHTS; i ++ ) {
-
-		// TODO (abelnation): implement
-
-	}
-
-#endif
-*/
-
-#if NUM_DIR_LIGHTS > 0
-
-	for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {
-
-		getDirectionalDirectLightIrradiance( directionalLights[ i ], geometry, directLight );
-
-		dotNL = dot( geometry.normal, directLight.direction );
-		directLightColor_Diffuse = PI * directLight.color;
-
-		vLightFront += saturate( dotNL ) * directLightColor_Diffuse;
-
-		#ifdef DOUBLE_SIDED
-
-			vLightBack += saturate( -dotNL ) * directLightColor_Diffuse;
-
-		#endif
-
-	}
-
-#endif
-
-#if NUM_HEMI_LIGHTS > 0
-
-	for ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {
-
-		vLightFront += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry );
-
-		#ifdef DOUBLE_SIDED
-
-			vLightBack += getHemisphereLightIrradiance( hemisphereLights[ i ], backGeometry );
-
-		#endif
-
-	}
-
-#endif
-</code></pre></div><pre><code class="glsl"></code></pre>
-
-<input id="toggle44" type="checkbox"><label class="indented" for="toggle44">/* shadowmap_vertex.glsl */</label>
-
-<div id="expand44" class="indented expand"><pre><code class="glsl">
+<div id="expand49" class="indented expand"><pre><code class="glsl">
 #ifdef USE_SHADOWMAP
 
 	#if NUM_DIR_LIGHTS > 0
@@ -1442,9 +795,9 @@ vec3 directLightColor_Diffuse;
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle45" type="checkbox"><label class="indented" for="toggle45">/* fog_vertex.glsl */</label>
+<input id="toggle50" type="checkbox"><label class="indented" for="toggle50">/* fog_vertex.glsl */</label>
 
-<div id="expand45" class="indented expand"><pre><code class="glsl">
+<div id="expand50" class="indented expand"><pre><code class="glsl">
 
 #ifdef USE_FOG
 fogDepth = -mvPosition.z;
@@ -1453,25 +806,21 @@ fogDepth = -mvPosition.z;
 </code></pre>
 
 
-<h2>meshlambert_frag.glsl</h2>
+<h2>meshphong_frag.glsl</h2>
 
-<pre><code class="glsl">uniform vec3 diffuse;
+<pre><code class="glsl">#define PHONG
+
+uniform vec3 diffuse;
 uniform vec3 emissive;
+uniform vec3 specular;
+uniform float shininess;
 uniform float opacity;
-
-varying vec3 vLightFront;
-
-#ifdef DOUBLE_SIDED
-
-	varying vec3 vLightBack;
-
-#endif
 
 </code></pre>
 
-<input id="toggle46" type="checkbox"><label class="" for="toggle46">/* common.glsl */</label>
+<input id="toggle51" type="checkbox"><label class="" for="toggle51">/* common.glsl */</label>
 
-<div id="expand46" class=" expand"><pre><code class="glsl">
+<div id="expand51" class=" expand"><pre><code class="glsl">
 #define PI 3.14159265359
 #define PI2 6.28318530718
 #define PI_HALF 1.5707963267949
@@ -1569,9 +918,9 @@ float linearToRelativeLuminance( const in vec3 color ) {
 }
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle47" type="checkbox"><label class="" for="toggle47">/* packing.glsl */</label>
+<input id="toggle52" type="checkbox"><label class="" for="toggle52">/* packing.glsl */</label>
 
-<div id="expand47" class=" expand"><pre><code class="glsl">
+<div id="expand52" class=" expand"><pre><code class="glsl">
 vec3 packNormalToRGB( const in vec3 normal ) {
 	return normalize( normal ) * 0.5 + 0.5;
 }
@@ -1615,9 +964,9 @@ float perspectiveDepthToViewZ( const in float invClipZ, const in float near, con
 }
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle48" type="checkbox"><label class="" for="toggle48">/* dithering_pars_fragment.glsl */</label>
+<input id="toggle53" type="checkbox"><label class="" for="toggle53">/* dithering_pars_fragment.glsl */</label>
 
-<div id="expand48" class=" expand"><pre><code class="glsl">
+<div id="expand53" class=" expand"><pre><code class="glsl">
 #if defined( DITHERING )
 
 	// based on https://www.shadertoy.com/view/MslGR8
@@ -1638,9 +987,9 @@ float perspectiveDepthToViewZ( const in float invClipZ, const in float near, con
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle49" type="checkbox"><label class="" for="toggle49">/* color_pars_fragment.glsl */</label>
+<input id="toggle54" type="checkbox"><label class="" for="toggle54">/* color_pars_fragment.glsl */</label>
 
-<div id="expand49" class=" expand"><pre><code class="glsl">
+<div id="expand54" class=" expand"><pre><code class="glsl">
 #ifdef USE_COLOR
 
 	varying vec3 vColor;
@@ -1648,27 +997,27 @@ float perspectiveDepthToViewZ( const in float invClipZ, const in float near, con
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle50" type="checkbox"><label class="" for="toggle50">/* uv_pars_fragment.glsl */</label>
+<input id="toggle55" type="checkbox"><label class="" for="toggle55">/* uv_pars_fragment.glsl */</label>
 
-<div id="expand50" class=" expand"><pre><code class="glsl">
+<div id="expand55" class=" expand"><pre><code class="glsl">
 #if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP )
 
 	varying vec2 vUv;
 
 #endif</code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle51" type="checkbox"><label class="" for="toggle51">/* uv2_pars_fragment.glsl */</label>
+<input id="toggle56" type="checkbox"><label class="" for="toggle56">/* uv2_pars_fragment.glsl */</label>
 
-<div id="expand51" class=" expand"><pre><code class="glsl">
+<div id="expand56" class=" expand"><pre><code class="glsl">
 #if defined( USE_LIGHTMAP ) || defined( USE_AOMAP )
 
 	varying vec2 vUv2;
 
 #endif</code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle52" type="checkbox"><label class="" for="toggle52">/* map_pars_fragment.glsl */</label>
+<input id="toggle57" type="checkbox"><label class="" for="toggle57">/* map_pars_fragment.glsl */</label>
 
-<div id="expand52" class=" expand"><pre><code class="glsl">
+<div id="expand57" class=" expand"><pre><code class="glsl">
 #ifdef USE_MAP
 
 	uniform sampler2D map;
@@ -1676,9 +1025,9 @@ float perspectiveDepthToViewZ( const in float invClipZ, const in float near, con
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle53" type="checkbox"><label class="" for="toggle53">/* alphamap_pars_fragment.glsl */</label>
+<input id="toggle58" type="checkbox"><label class="" for="toggle58">/* alphamap_pars_fragment.glsl */</label>
 
-<div id="expand53" class=" expand"><pre><code class="glsl">
+<div id="expand58" class=" expand"><pre><code class="glsl">
 #ifdef USE_ALPHAMAP
 
 	uniform sampler2D alphaMap;
@@ -1686,9 +1035,9 @@ float perspectiveDepthToViewZ( const in float invClipZ, const in float near, con
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle54" type="checkbox"><label class="" for="toggle54">/* aomap_pars_fragment.glsl */</label>
+<input id="toggle59" type="checkbox"><label class="" for="toggle59">/* aomap_pars_fragment.glsl */</label>
 
-<div id="expand54" class=" expand"><pre><code class="glsl">
+<div id="expand59" class=" expand"><pre><code class="glsl">
 #ifdef USE_AOMAP
 
 	uniform sampler2D aoMap;
@@ -1696,9 +1045,9 @@ float perspectiveDepthToViewZ( const in float invClipZ, const in float near, con
 
 #endif</code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle55" type="checkbox"><label class="" for="toggle55">/* lightmap_pars_fragment.glsl */</label>
+<input id="toggle60" type="checkbox"><label class="" for="toggle60">/* lightmap_pars_fragment.glsl */</label>
 
-<div id="expand55" class=" expand"><pre><code class="glsl">
+<div id="expand60" class=" expand"><pre><code class="glsl">
 #ifdef USE_LIGHTMAP
 
 	uniform sampler2D lightMap;
@@ -1706,9 +1055,9 @@ float perspectiveDepthToViewZ( const in float invClipZ, const in float near, con
 
 #endif</code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle56" type="checkbox"><label class="" for="toggle56">/* emissivemap_pars_fragment.glsl */</label>
+<input id="toggle61" type="checkbox"><label class="" for="toggle61">/* emissivemap_pars_fragment.glsl */</label>
 
-<div id="expand56" class=" expand"><pre><code class="glsl">
+<div id="expand61" class=" expand"><pre><code class="glsl">
 #ifdef USE_EMISSIVEMAP
 
 	uniform sampler2D emissiveMap;
@@ -1716,9 +1065,9 @@ float perspectiveDepthToViewZ( const in float invClipZ, const in float near, con
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle57" type="checkbox"><label class="" for="toggle57">/* envmap_pars_fragment.glsl */</label>
+<input id="toggle62" type="checkbox"><label class="" for="toggle62">/* envmap_pars_fragment.glsl */</label>
 
-<div id="expand57" class=" expand"><pre><code class="glsl">
+<div id="expand62" class=" expand"><pre><code class="glsl">
 #if defined( USE_ENVMAP ) || defined( PHYSICAL )
 	uniform float reflectivity;
 	uniform float envMapIntensity;
@@ -1746,9 +1095,60 @@ float perspectiveDepthToViewZ( const in float invClipZ, const in float near, con
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle58" type="checkbox"><label class="" for="toggle58">/* bsdfs.glsl */</label>
+<input id="toggle63" type="checkbox"><label class="" for="toggle63">/* gradientmap_pars_fragment.glsl */</label>
 
-<div id="expand58" class=" expand"><pre><code class="glsl">
+<div id="expand63" class=" expand"><pre><code class="glsl">
+#ifdef TOON
+
+	uniform sampler2D gradientMap;
+
+	vec3 getGradientIrradiance( vec3 normal, vec3 lightDirection ) {
+
+		// dotNL will be from -1.0 to 1.0
+		float dotNL = dot( normal, lightDirection );
+		vec2 coord = vec2( dotNL * 0.5 + 0.5, 0.0 );
+
+		#ifdef USE_GRADIENTMAP
+
+			return texture2D( gradientMap, coord ).rgb;
+
+		#else
+
+			return ( coord.x < 0.7 ) ? vec3( 0.7 ) : vec3( 1.0 );
+
+		#endif
+
+
+	}
+
+#endif
+</code></pre></div><pre><code class="glsl"></code></pre>
+
+<input id="toggle64" type="checkbox"><label class="" for="toggle64">/* fog_pars_fragment.glsl */</label>
+
+<div id="expand64" class=" expand"><pre><code class="glsl">
+#ifdef USE_FOG
+
+	uniform vec3 fogColor;
+	varying float fogDepth;
+
+	#ifdef FOG_EXP2
+
+		uniform float fogDensity;
+
+	#else
+
+		uniform float fogNear;
+		uniform float fogFar;
+
+	#endif
+
+#endif
+</code></pre></div><pre><code class="glsl"></code></pre>
+
+<input id="toggle65" type="checkbox"><label class="" for="toggle65">/* bsdfs.glsl */</label>
+
+<div id="expand65" class=" expand"><pre><code class="glsl">
 float punctualLightIntensityToIrradianceFactor( const in float lightDistance, const in float cutoffDistance, const in float decayExponent ) {
 
 	if( decayExponent > 0.0 ) {
@@ -2035,9 +1435,9 @@ float BlinnExponentToGGXRoughness( const in float blinnExponent ) {
 }
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle59" type="checkbox"><label class="" for="toggle59">/* lights_pars.glsl */</label>
+<input id="toggle66" type="checkbox"><label class="" for="toggle66">/* lights_pars.glsl */</label>
 
-<div id="expand59" class=" expand"><pre><code class="glsl">
+<div id="expand66" class=" expand"><pre><code class="glsl">
 uniform vec3 ambientLightColor;
 
 vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
@@ -2345,31 +1745,67 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle60" type="checkbox"><label class="" for="toggle60">/* fog_pars_fragment.glsl */</label>
+<input id="toggle67" type="checkbox"><label class="" for="toggle67">/* lights_phong_pars_fragment.glsl */</label>
 
-<div id="expand60" class=" expand"><pre><code class="glsl">
-#ifdef USE_FOG
+<div id="expand67" class=" expand"><pre><code class="glsl">
+varying vec3 vViewPosition;
 
-	uniform vec3 fogColor;
-	varying float fogDepth;
+#ifndef FLAT_SHADED
 
-	#ifdef FOG_EXP2
+	varying vec3 vNormal;
 
-		uniform float fogDensity;
+#endif
+
+
+struct BlinnPhongMaterial {
+
+	vec3	diffuseColor;
+	vec3	specularColor;
+	float	specularShininess;
+	float	specularStrength;
+
+};
+
+void RE_Direct_BlinnPhong( const in IncidentLight directLight, const in GeometricContext geometry, const in BlinnPhongMaterial material, inout ReflectedLight reflectedLight ) {
+
+	#ifdef TOON
+
+		vec3 irradiance = getGradientIrradiance( geometry.normal, directLight.direction ) * directLight.color;
 
 	#else
 
-		uniform float fogNear;
-		uniform float fogFar;
+		float dotNL = saturate( dot( geometry.normal, directLight.direction ) );
+		vec3 irradiance = dotNL * directLight.color;
 
 	#endif
 
-#endif
+	#ifndef PHYSICALLY_CORRECT_LIGHTS
+
+		irradiance *= PI; // punctual light
+
+	#endif
+
+	reflectedLight.directDiffuse += irradiance * BRDF_Diffuse_Lambert( material.diffuseColor );
+
+	reflectedLight.directSpecular += irradiance * BRDF_Specular_BlinnPhong( directLight, geometry, material.specularColor, material.specularShininess ) * material.specularStrength;
+
+}
+
+void RE_IndirectDiffuse_BlinnPhong( const in vec3 irradiance, const in GeometricContext geometry, const in BlinnPhongMaterial material, inout ReflectedLight reflectedLight ) {
+
+	reflectedLight.indirectDiffuse += irradiance * BRDF_Diffuse_Lambert( material.diffuseColor );
+
+}
+
+#define RE_Direct				RE_Direct_BlinnPhong
+#define RE_IndirectDiffuse		RE_IndirectDiffuse_BlinnPhong
+
+#define Material_LightProbeLOD( material )	(0)
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle61" type="checkbox"><label class="" for="toggle61">/* shadowmap_pars_fragment.glsl */</label>
+<input id="toggle68" type="checkbox"><label class="" for="toggle68">/* shadowmap_pars_fragment.glsl */</label>
 
-<div id="expand61" class=" expand"><pre><code class="glsl">
+<div id="expand68" class=" expand"><pre><code class="glsl">
 #ifdef USE_SHADOWMAP
 
 	#if NUM_DIR_LIGHTS > 0
@@ -2615,81 +2051,99 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle62" type="checkbox"><label class="" for="toggle62">/* shadowmask_pars_fragment.glsl */</label>
+<input id="toggle69" type="checkbox"><label class="" for="toggle69">/* bumpmap_pars_fragment.glsl */</label>
 
-<div id="expand62" class=" expand"><pre><code class="glsl">
-float getShadowMask() {
+<div id="expand69" class=" expand"><pre><code class="glsl">
+#ifdef USE_BUMPMAP
 
-	float shadow = 1.0;
+	uniform sampler2D bumpMap;
+	uniform float bumpScale;
 
-	#ifdef USE_SHADOWMAP
+	// Derivative maps - bump mapping unparametrized surfaces by Morten Mikkelsen
+	// http://mmikkelsen3d.blogspot.sk/2011/07/derivative-maps.html
 
-	#if NUM_DIR_LIGHTS > 0
+	// Evaluate the derivative of the height w.r.t. screen-space using forward differencing (listing 2)
 
-	DirectionalLight directionalLight;
+	vec2 dHdxy_fwd() {
 
-	for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {
+		vec2 dSTdx = dFdx( vUv );
+		vec2 dSTdy = dFdy( vUv );
 
-		directionalLight = directionalLights[ i ];
-		shadow *= bool( directionalLight.shadow ) ? getShadow( directionalShadowMap[ i ], directionalLight.shadowMapSize, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;
+		float Hll = bumpScale * texture2D( bumpMap, vUv ).x;
+		float dBx = bumpScale * texture2D( bumpMap, vUv + dSTdx ).x - Hll;
+		float dBy = bumpScale * texture2D( bumpMap, vUv + dSTdy ).x - Hll;
 
-	}
-
-	#endif
-
-	#if NUM_SPOT_LIGHTS > 0
-
-	SpotLight spotLight;
-
-	for ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {
-
-		spotLight = spotLights[ i ];
-		shadow *= bool( spotLight.shadow ) ? getShadow( spotShadowMap[ i ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;
+		return vec2( dBx, dBy );
 
 	}
 
-	#endif
+	vec3 perturbNormalArb( vec3 surf_pos, vec3 surf_norm, vec2 dHdxy ) {
 
-	#if NUM_POINT_LIGHTS > 0
+		// Workaround for Adreno 3XX dFd*( vec3 ) bug. See #9988
 
-	PointLight pointLight;
+		vec3 vSigmaX = vec3( dFdx( surf_pos.x ), dFdx( surf_pos.y ), dFdx( surf_pos.z ) );
+		vec3 vSigmaY = vec3( dFdy( surf_pos.x ), dFdy( surf_pos.y ), dFdy( surf_pos.z ) );
+		vec3 vN = surf_norm;		// normalized
 
-	for ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {
+		vec3 R1 = cross( vSigmaY, vN );
+		vec3 R2 = cross( vN, vSigmaX );
 
-		pointLight = pointLights[ i ];
-		shadow *= bool( pointLight.shadow ) ? getPointShadow( pointShadowMap[ i ], pointLight.shadowMapSize, pointLight.shadowBias, pointLight.shadowRadius, vPointShadowCoord[ i ], pointLight.shadowCameraNear, pointLight.shadowCameraFar ) : 1.0;
+		float fDet = dot( vSigmaX, R1 );
+
+		vec3 vGrad = sign( fDet ) * ( dHdxy.x * R1 + dHdxy.y * R2 );
+		return normalize( abs( fDet ) * surf_norm - vGrad );
 
 	}
 
-	#endif
-
-	/*
-	#if NUM_RECT_AREA_LIGHTS > 0
-
-		// TODO (abelnation): update shadow for Area light
-
-	#endif
-	*/
-
-	#endif
-
-	return shadow;
-
-}
+#endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle63" type="checkbox"><label class="" for="toggle63">/* specularmap_pars_fragment.glsl */</label>
+<input id="toggle70" type="checkbox"><label class="" for="toggle70">/* normalmap_pars_fragment.glsl */</label>
 
-<div id="expand63" class=" expand"><pre><code class="glsl">
+<div id="expand70" class=" expand"><pre><code class="glsl">
+#ifdef USE_NORMALMAP
+
+	uniform sampler2D normalMap;
+	uniform vec2 normalScale;
+
+	// Per-Pixel Tangent Space Normal Mapping
+	// http://hacksoflife.blogspot.ch/2009/11/per-pixel-tangent-space-normal-mapping.html
+
+	vec3 perturbNormal2Arb( vec3 eye_pos, vec3 surf_norm ) {
+
+		// Workaround for Adreno 3XX dFd*( vec3 ) bug. See #9988
+
+		vec3 q0 = vec3( dFdx( eye_pos.x ), dFdx( eye_pos.y ), dFdx( eye_pos.z ) );
+		vec3 q1 = vec3( dFdy( eye_pos.x ), dFdy( eye_pos.y ), dFdy( eye_pos.z ) );
+		vec2 st0 = dFdx( vUv.st );
+		vec2 st1 = dFdy( vUv.st );
+
+		vec3 S = normalize( q0 * st1.t - q1 * st0.t );
+		vec3 T = normalize( -q0 * st1.s + q1 * st0.s );
+		vec3 N = normalize( surf_norm );
+
+		vec3 mapN = texture2D( normalMap, vUv ).xyz * 2.0 - 1.0;
+		mapN.xy = normalScale * mapN.xy;
+		mat3 tsn = mat3( S, T, N );
+		return normalize( tsn * mapN );
+
+	}
+
+#endif
+</code></pre></div><pre><code class="glsl"></code></pre>
+
+<input id="toggle71" type="checkbox"><label class="" for="toggle71">/* specularmap_pars_fragment.glsl */</label>
+
+<div id="expand71" class=" expand"><pre><code class="glsl">
 #ifdef USE_SPECULARMAP
 
 	uniform sampler2D specularMap;
 
 #endif</code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle64" type="checkbox"><label class="" for="toggle64">/* logdepthbuf_pars_fragment.glsl */</label>
+<input id="toggle72" type="checkbox"><label class="" for="toggle72">/* logdepthbuf_pars_fragment.glsl */</label>
 
-<div id="expand64" class=" expand"><pre><code class="glsl">
+<div id="expand72" class=" expand"><pre><code class="glsl">
 #ifdef USE_LOGDEPTHBUF
 
 	uniform float logDepthBufFC;
@@ -2703,9 +2157,9 @@ float getShadowMask() {
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle65" type="checkbox"><label class="" for="toggle65">/* clipping_planes_pars_fragment.glsl */</label>
+<input id="toggle73" type="checkbox"><label class="" for="toggle73">/* clipping_planes_pars_fragment.glsl */</label>
 
-<div id="expand65" class=" expand"><pre><code class="glsl">
+<div id="expand73" class=" expand"><pre><code class="glsl">
 #if NUM_CLIPPING_PLANES > 0
 
 	#if ! defined( PHYSICAL ) && ! defined( PHONG )
@@ -2721,9 +2175,9 @@ void main() {
 <pre><code class="glsl">
 </code></pre>
 
-<input id="toggle66" type="checkbox"><label class="indented" for="toggle66">/* clipping_planes_fragment.glsl */</label>
+<input id="toggle74" type="checkbox"><label class="indented" for="toggle74">/* clipping_planes_fragment.glsl */</label>
 
-<div id="expand66" class="indented expand"><pre><code class="glsl">
+<div id="expand74" class="indented expand"><pre><code class="glsl">
 #if NUM_CLIPPING_PLANES > 0
 
 	for ( int i = 0; i < UNION_CLIPPING_PLANES; ++ i ) {
@@ -2753,18 +2207,18 @@ void main() {
 
 </code></pre>
 
-<input id="toggle67" type="checkbox"><label class="indented" for="toggle67">/* logdepthbuf_fragment.glsl */</label>
+<input id="toggle75" type="checkbox"><label class="indented" for="toggle75">/* logdepthbuf_fragment.glsl */</label>
 
-<div id="expand67" class="indented expand"><pre><code class="glsl">
+<div id="expand75" class="indented expand"><pre><code class="glsl">
 #if defined( USE_LOGDEPTHBUF ) && defined( USE_LOGDEPTHBUF_EXT )
 
 	gl_FragDepthEXT = log2( vFragDepth ) * logDepthBufFC * 0.5;
 
 #endif</code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle68" type="checkbox"><label class="indented" for="toggle68">/* map_fragment.glsl */</label>
+<input id="toggle76" type="checkbox"><label class="indented" for="toggle76">/* map_fragment.glsl */</label>
 
-<div id="expand68" class="indented expand"><pre><code class="glsl">
+<div id="expand76" class="indented expand"><pre><code class="glsl">
 #ifdef USE_MAP
 
 	vec4 texelColor = texture2D( map, vUv );
@@ -2775,18 +2229,18 @@ void main() {
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle69" type="checkbox"><label class="indented" for="toggle69">/* color_fragment.glsl */</label>
+<input id="toggle77" type="checkbox"><label class="indented" for="toggle77">/* color_fragment.glsl */</label>
 
-<div id="expand69" class="indented expand"><pre><code class="glsl">
+<div id="expand77" class="indented expand"><pre><code class="glsl">
 #ifdef USE_COLOR
 
 	diffuseColor.rgb *= vColor;
 
 #endif</code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle70" type="checkbox"><label class="indented" for="toggle70">/* alphamap_fragment.glsl */</label>
+<input id="toggle78" type="checkbox"><label class="indented" for="toggle78">/* alphamap_fragment.glsl */</label>
 
-<div id="expand70" class="indented expand"><pre><code class="glsl">
+<div id="expand78" class="indented expand"><pre><code class="glsl">
 #ifdef USE_ALPHAMAP
 
 	diffuseColor.a *= texture2D( alphaMap, vUv ).g;
@@ -2794,9 +2248,9 @@ void main() {
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle71" type="checkbox"><label class="indented" for="toggle71">/* alphatest_fragment.glsl */</label>
+<input id="toggle79" type="checkbox"><label class="indented" for="toggle79">/* alphatest_fragment.glsl */</label>
 
-<div id="expand71" class="indented expand"><pre><code class="glsl">
+<div id="expand79" class="indented expand"><pre><code class="glsl">
 #ifdef ALPHATEST
 
 	if ( diffuseColor.a < ALPHATEST ) discard;
@@ -2804,9 +2258,9 @@ void main() {
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle72" type="checkbox"><label class="indented" for="toggle72">/* specularmap_fragment.glsl */</label>
+<input id="toggle80" type="checkbox"><label class="indented" for="toggle80">/* specularmap_fragment.glsl */</label>
 
-<div id="expand72" class="indented expand"><pre><code class="glsl">
+<div id="expand80" class="indented expand"><pre><code class="glsl">
 float specularStrength;
 
 #ifdef USE_SPECULARMAP
@@ -2820,9 +2274,43 @@ float specularStrength;
 
 #endif</code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle73" type="checkbox"><label class="indented" for="toggle73">/* emissivemap_fragment.glsl */</label>
+<input id="toggle81" type="checkbox"><label class="indented" for="toggle81">/* normal_fragment.glsl */</label>
 
-<div id="expand73" class="indented expand"><pre><code class="glsl">
+<div id="expand81" class="indented expand"><pre><code class="glsl">
+#ifdef FLAT_SHADED
+
+	// Workaround for Adreno/Nexus5 not able able to do dFdx( vViewPosition ) ...
+
+	vec3 fdx = vec3( dFdx( vViewPosition.x ), dFdx( vViewPosition.y ), dFdx( vViewPosition.z ) );
+	vec3 fdy = vec3( dFdy( vViewPosition.x ), dFdy( vViewPosition.y ), dFdy( vViewPosition.z ) );
+	vec3 normal = normalize( cross( fdx, fdy ) );
+
+#else
+
+	vec3 normal = normalize( vNormal );
+
+	#ifdef DOUBLE_SIDED
+
+		normal = normal * ( float( gl_FrontFacing ) * 2.0 - 1.0 );
+
+	#endif
+
+#endif
+
+#ifdef USE_NORMALMAP
+
+	normal = perturbNormal2Arb( -vViewPosition, normal );
+
+#elif defined( USE_BUMPMAP )
+
+	normal = perturbNormalArb( -vViewPosition, normal, dHdxy_fwd() );
+
+#endif
+</code></pre></div><pre><code class="glsl"></code></pre>
+
+<input id="toggle82" type="checkbox"><label class="indented" for="toggle82">/* emissivemap_fragment.glsl */</label>
+
+<div id="expand82" class="indented expand"><pre><code class="glsl">
 #ifdef USE_EMISSIVEMAP
 
 	vec4 emissiveColor = texture2D( emissiveMap, vUv );
@@ -2834,39 +2322,177 @@ float specularStrength;
 #endif
 </code></pre></div><pre><code class="glsl">
 	// accumulation
-	reflectedLight.indirectDiffuse = getAmbientLightIrradiance( ambientLightColor );
-
 </code></pre>
 
-<input id="toggle74" type="checkbox"><label class="indented" for="toggle74">/* lightmap_fragment.glsl */</label>
+<input id="toggle83" type="checkbox"><label class="indented" for="toggle83">/* lights_phong_fragment.glsl */</label>
 
-<div id="expand74" class="indented expand"><pre><code class="glsl">
-#ifdef USE_LIGHTMAP
+<div id="expand83" class="indented expand"><pre><code class="glsl">
+BlinnPhongMaterial material;
+material.diffuseColor = diffuseColor.rgb;
+material.specularColor = specular;
+material.specularShininess = shininess;
+material.specularStrength = specularStrength;
+</code></pre></div><pre><code class="glsl"></code></pre>
 
-	reflectedLight.indirectDiffuse += PI * texture2D( lightMap, vUv2 ).xyz * lightMapIntensity; // factor of PI should not be present; included here to prevent breakage
+<input id="toggle84" type="checkbox"><label class="indented" for="toggle84">/* lights_template.glsl */</label>
+
+<div id="expand84" class="indented expand"><pre><code class="glsl">
+/**
+ * This is a template that can be used to light a material, it uses pluggable
+ * RenderEquations (RE)for specific lighting scenarios.
+ *
+ * Instructions for use:
+ * - Ensure that both RE_Direct, RE_IndirectDiffuse and RE_IndirectSpecular are defined
+ * - If you have defined an RE_IndirectSpecular, you need to also provide a Material_LightProbeLOD. <---- ???
+ * - Create a material parameter that is to be passed as the third parameter to your lighting functions.
+ *
+ * TODO:
+ * - Add area light support.
+ * - Add sphere light support.
+ * - Add diffuse light probe (irradiance cubemap) support.
+ */
+
+GeometricContext geometry;
+
+geometry.position = - vViewPosition;
+geometry.normal = normal;
+geometry.viewDir = normalize( vViewPosition );
+
+IncidentLight directLight;
+
+#if ( NUM_POINT_LIGHTS > 0 ) && defined( RE_Direct )
+
+	PointLight pointLight;
+
+	for ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {
+
+		pointLight = pointLights[ i ];
+
+		getPointDirectLightIrradiance( pointLight, geometry, directLight );
+
+		#ifdef USE_SHADOWMAP
+		directLight.color *= all( bvec2( pointLight.shadow, directLight.visible ) ) ? getPointShadow( pointShadowMap[ i ], pointLight.shadowMapSize, pointLight.shadowBias, pointLight.shadowRadius, vPointShadowCoord[ i ], pointLight.shadowCameraNear, pointLight.shadowCameraFar ) : 1.0;
+		#endif
+
+		RE_Direct( directLight, geometry, material, reflectedLight );
+
+	}
 
 #endif
-</code></pre></div><pre><code class="glsl">
-	reflectedLight.indirectDiffuse *= BRDF_Diffuse_Lambert( diffuseColor.rgb );
 
-	#ifdef DOUBLE_SIDED
+#if ( NUM_SPOT_LIGHTS > 0 ) && defined( RE_Direct )
 
-		reflectedLight.directDiffuse = ( gl_FrontFacing ) ? vLightFront : vLightBack;
+	SpotLight spotLight;
 
-	#else
+	for ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {
 
-		reflectedLight.directDiffuse = vLightFront;
+		spotLight = spotLights[ i ];
+
+		getSpotDirectLightIrradiance( spotLight, geometry, directLight );
+
+		#ifdef USE_SHADOWMAP
+		directLight.color *= all( bvec2( spotLight.shadow, directLight.visible ) ) ? getShadow( spotShadowMap[ i ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;
+		#endif
+
+		RE_Direct( directLight, geometry, material, reflectedLight );
+
+	}
+
+#endif
+
+#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )
+
+	DirectionalLight directionalLight;
+
+	for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {
+
+		directionalLight = directionalLights[ i ];
+
+		getDirectionalDirectLightIrradiance( directionalLight, geometry, directLight );
+
+		#ifdef USE_SHADOWMAP
+		directLight.color *= all( bvec2( directionalLight.shadow, directLight.visible ) ) ? getShadow( directionalShadowMap[ i ], directionalLight.shadowMapSize, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;
+		#endif
+
+		RE_Direct( directLight, geometry, material, reflectedLight );
+
+	}
+
+#endif
+
+#if ( NUM_RECT_AREA_LIGHTS > 0 ) && defined( RE_Direct_RectArea )
+
+	RectAreaLight rectAreaLight;
+
+	for ( int i = 0; i < NUM_RECT_AREA_LIGHTS; i ++ ) {
+
+		rectAreaLight = rectAreaLights[ i ];
+		RE_Direct_RectArea( rectAreaLight, geometry, material, reflectedLight );
+
+	}
+
+#endif
+
+#if defined( RE_IndirectDiffuse )
+
+	vec3 irradiance = getAmbientLightIrradiance( ambientLightColor );
+
+	#ifdef USE_LIGHTMAP
+
+		vec3 lightMapIrradiance = texture2D( lightMap, vUv2 ).xyz * lightMapIntensity;
+
+		#ifndef PHYSICALLY_CORRECT_LIGHTS
+
+			lightMapIrradiance *= PI; // factor of PI should not be present; included here to prevent breakage
+
+		#endif
+
+		irradiance += lightMapIrradiance;
 
 	#endif
 
-	reflectedLight.directDiffuse *= BRDF_Diffuse_Lambert( diffuseColor.rgb ) * getShadowMask();
+	#if ( NUM_HEMI_LIGHTS > 0 )
 
+		for ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {
+
+			irradiance += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry );
+
+		}
+
+	#endif
+
+	#if defined( USE_ENVMAP ) && defined( PHYSICAL ) && defined( ENVMAP_TYPE_CUBE_UV )
+
+		// TODO, replace 8 with the real maxMIPLevel
+		irradiance += getLightProbeIndirectIrradiance( /*lightProbe,*/ geometry, 8 );
+
+	#endif
+
+	RE_IndirectDiffuse( irradiance, geometry, material, reflectedLight );
+
+#endif
+
+#if defined( USE_ENVMAP ) && defined( RE_IndirectSpecular )
+
+	// TODO, replace 8 with the real maxMIPLevel
+	vec3 radiance = getLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, Material_BlinnShininessExponent( material ), 8 );
+
+	#ifndef STANDARD
+		vec3 clearCoatRadiance = getLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, Material_ClearCoat_BlinnShininessExponent( material ), 8 );
+	#else
+		vec3 clearCoatRadiance = vec3( 0.0 );
+	#endif
+
+	RE_IndirectSpecular( radiance, clearCoatRadiance, geometry, material, reflectedLight );
+
+#endif
+</code></pre></div><pre><code class="glsl">
 	// modulation
 </code></pre>
 
-<input id="toggle75" type="checkbox"><label class="indented" for="toggle75">/* aomap_fragment.glsl */</label>
+<input id="toggle85" type="checkbox"><label class="indented" for="toggle85">/* aomap_fragment.glsl */</label>
 
-<div id="expand75" class="indented expand"><pre><code class="glsl">
+<div id="expand85" class="indented expand"><pre><code class="glsl">
 #ifdef USE_AOMAP
 
 	// reads channel R, compatible with a combined OcclusionRoughnessMetallic (RGB) texture
@@ -2884,13 +2510,13 @@ float specularStrength;
 
 #endif
 </code></pre></div><pre><code class="glsl">
-	vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + totalEmissiveRadiance;
+	vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;
 
 </code></pre>
 
-<input id="toggle76" type="checkbox"><label class="indented" for="toggle76">/* envmap_fragment.glsl */</label>
+<input id="toggle86" type="checkbox"><label class="indented" for="toggle86">/* envmap_fragment.glsl */</label>
 
-<div id="expand76" class="indented expand"><pre><code class="glsl">
+<div id="expand86" class="indented expand"><pre><code class="glsl">
 #ifdef USE_ENVMAP
 
 	#if defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( PHONG )
@@ -2968,9 +2594,9 @@ float specularStrength;
 
 </code></pre>
 
-<input id="toggle77" type="checkbox"><label class="indented" for="toggle77">/* tonemapping_fragment.glsl */</label>
+<input id="toggle87" type="checkbox"><label class="indented" for="toggle87">/* tonemapping_fragment.glsl */</label>
 
-<div id="expand77" class="indented expand"><pre><code class="glsl">
+<div id="expand87" class="indented expand"><pre><code class="glsl">
 #if defined( TONE_MAPPING )
 
   gl_FragColor.rgb = toneMapping( gl_FragColor.rgb );
@@ -2978,15 +2604,15 @@ float specularStrength;
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle78" type="checkbox"><label class="indented" for="toggle78">/* encodings_fragment.glsl */</label>
+<input id="toggle88" type="checkbox"><label class="indented" for="toggle88">/* encodings_fragment.glsl */</label>
 
-<div id="expand78" class="indented expand"><pre><code class="glsl">
+<div id="expand88" class="indented expand"><pre><code class="glsl">
   gl_FragColor = linearToOutputTexel( gl_FragColor );
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle79" type="checkbox"><label class="indented" for="toggle79">/* fog_fragment.glsl */</label>
+<input id="toggle89" type="checkbox"><label class="indented" for="toggle89">/* fog_fragment.glsl */</label>
 
-<div id="expand79" class="indented expand"><pre><code class="glsl">
+<div id="expand89" class="indented expand"><pre><code class="glsl">
 #ifdef USE_FOG
 
 	#ifdef FOG_EXP2
@@ -3004,9 +2630,9 @@ float specularStrength;
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle80" type="checkbox"><label class="indented" for="toggle80">/* premultiplied_alpha_fragment.glsl */</label>
+<input id="toggle90" type="checkbox"><label class="indented" for="toggle90">/* premultiplied_alpha_fragment.glsl */</label>
 
-<div id="expand80" class="indented expand"><pre><code class="glsl">
+<div id="expand90" class="indented expand"><pre><code class="glsl">
 #ifdef PREMULTIPLIED_ALPHA
 
 	// Get get normal blending with premultipled, use with CustomBlending, OneFactor, OneMinusSrcAlphaFactor, AddEquation.
@@ -3015,9 +2641,9 @@ float specularStrength;
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle81" type="checkbox"><label class="indented" for="toggle81">/* dithering_fragment.glsl */</label>
+<input id="toggle91" type="checkbox"><label class="indented" for="toggle91">/* dithering_fragment.glsl */</label>
 
-<div id="expand81" class="indented expand"><pre><code class="glsl">
+<div id="expand91" class="indented expand"><pre><code class="glsl">
 #if defined( DITHERING )
 
   gl_FragColor.rgb = dithering( gl_FragColor.rgb );

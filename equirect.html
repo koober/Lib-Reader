@@ -8,7 +8,7 @@
 	<script src="lib/highlight.pack.js"></script>
   </head>
   <body>
-<h1>three.js R88</h1>
+<h1><a href="https://threejs.org">three.js</a> <a href="https://github.com/mrdoob/three.js">R88</a></h1>
 updated from dev branch 11 Dec 2017.
 <ul>
 <li><a href="cube.html">cube</a></li>
@@ -25,12 +25,12 @@ updated from dev branch 11 Dec 2017.
 <li><a href="shadow.html">shadow</a></li>
 </ul>
 
-<h2>equirect: uniforms</h2>
+<h2>equirect.uniforms</h2>
 
-<pre><code class="javascript">uniforms: {
-tEquirect: { value: null },
-},
-</code></pre>
+	<pre><code class='javascript'>uniforms: {
+	tEquirect: { value: null },
+}
+	</code></pre>
 
 
 <h2>equirect_vert.glsl</h2>
@@ -39,9 +39,9 @@ tEquirect: { value: null },
 
 </code></pre>
 
-<input id="toggle5" type="checkbox"><label class="" for="toggle5">/* common.glsl */</label>
+<input id="toggle4" type="checkbox"><label class="" for="toggle4">/* common.glsl */</label>
 
-<div id="expand5" class=" expand"><pre><code class="glsl">
+<div id="expand4" class=" expand"><pre><code class="glsl">
 #define PI 3.14159265359
 #define PI2 6.28318530718
 #define PI_HALF 1.5707963267949
@@ -145,16 +145,16 @@ void main() {
 
 </code></pre>
 
-<input id="toggle6" type="checkbox"><label class="indented" for="toggle6">/* begin_vertex.glsl */</label>
+<input id="toggle5" type="checkbox"><label class="indented" for="toggle5">/* begin_vertex.glsl */</label>
 
-<div id="expand6" class="indented expand"><pre><code class="glsl">
+<div id="expand5" class="indented expand"><pre><code class="glsl">
 
 vec3 transformed = vec3( position );
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle7" type="checkbox"><label class="indented" for="toggle7">/* project_vertex.glsl */</label>
+<input id="toggle6" type="checkbox"><label class="indented" for="toggle6">/* project_vertex.glsl */</label>
 
-<div id="expand7" class="indented expand"><pre><code class="glsl">
+<div id="expand6" class="indented expand"><pre><code class="glsl">
 vec4 mvPosition = modelViewMatrix * vec4( transformed, 1.0 );
 
 gl_Position = projectionMatrix * mvPosition;
@@ -171,9 +171,9 @@ varying vec3 vWorldPosition;
 
 </code></pre>
 
-<input id="toggle8" type="checkbox"><label class="" for="toggle8">/* common.glsl */</label>
+<input id="toggle7" type="checkbox"><label class="" for="toggle7">/* common.glsl */</label>
 
-<div id="expand8" class=" expand"><pre><code class="glsl">
+<div id="expand7" class=" expand"><pre><code class="glsl">
 #define PI 3.14159265359
 #define PI2 6.28318530718
 #define PI_HALF 1.5707963267949

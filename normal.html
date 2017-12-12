@@ -8,7 +8,7 @@
 	<script src="lib/highlight.pack.js"></script>
   </head>
   <body>
-<h1>three.js R88</h1>
+<h1><a href="https://threejs.org">three.js</a> <a href="https://github.com/mrdoob/three.js">R88</a></h1>
 updated from dev branch 11 Dec 2017.
 <ul>
 <li><a href="cube.html">cube</a></li>
@@ -25,50 +25,54 @@ updated from dev branch 11 Dec 2017.
 <li><a href="shadow.html">shadow</a></li>
 </ul>
 
-<h2>normal: uniforms</h2>
+<h2>normal.uniforms</h2>
 
-<pre><code class="javascript">uniforms: UniformsUtils.merge( [
+		<pre><code class='javascript'>uniforms: UniformsUtils.merge( [
 </code></pre>
 
-<input id="toggle2" type="checkbox"><label for="toggle2">/* UniformsLib.common */</label>
+<input id="toggle1" type="checkbox"><label for="toggle1">/* UniformsLib.common
+ */</label>
+
+<div id="expand1" class="expand"><div class="indented"><pre><code class="javascript">{
+	diffuse: { value: new Color( 0xeeeeee ) },
+	opacity: { value: 1.0 },
+	map: { value: null },
+	uvTransform: { value: new Matrix3() },
+	alphaMap: { value: null },
+}</code></pre>
+</div></div><pre><code class="javascript"></code></pre>
+
+<input id="toggle2" type="checkbox"><label for="toggle2">/* UniformsLib.bumpmap
+ */</label>
 
 <div id="expand2" class="expand"><div class="indented"><pre><code class="javascript">{
-diffuse: { value: new Color( 0xeeeeee ) },
-opacity: { value: 1.0 },
-map: { value: null },
-uvTransform: { value: new Matrix3() },
-alphaMap: { value: null },
+	bumpMap: { value: null },
+	bumpScale: { value: 1 }
 }</code></pre>
 </div></div><pre><code class="javascript"></code></pre>
 
-<input id="toggle3" type="checkbox"><label for="toggle3">/* UniformsLib.bumpmap */</label>
+<input id="toggle3" type="checkbox"><label for="toggle3">/* UniformsLib.normalmap
+ */</label>
 
 <div id="expand3" class="expand"><div class="indented"><pre><code class="javascript">{
-bumpMap: { value: null },
-bumpScale: { value: 1 }
+	normalMap: { value: null },
+	normalScale: { value: new Vector2( 1, 1 ) }
 }</code></pre>
 </div></div><pre><code class="javascript"></code></pre>
 
-<input id="toggle4" type="checkbox"><label for="toggle4">/* UniformsLib.normalmap */</label>
+<input id="toggle4" type="checkbox"><label for="toggle4">/* UniformsLib.displacementmap
+ */</label>
 
 <div id="expand4" class="expand"><div class="indented"><pre><code class="javascript">{
-normalMap: { value: null },
-normalScale: { value: new Vector2( 1, 1 ) }
+	displacementMap: { value: null },
+	displacementScale: { value: 1 },
+	displacementBias: { value: 0 }
 }</code></pre>
-</div></div><pre><code class="javascript"></code></pre>
-
-<input id="toggle5" type="checkbox"><label for="toggle5">/* UniformsLib.displacementmap */</label>
-
-<div id="expand5" class="expand"><div class="indented"><pre><code class="javascript">{
-displacementMap: { value: null },
-displacementScale: { value: 1 },
-displacementBias: { value: 0 }
-}</code></pre>
-</div></div><pre><code class="javascript">{
-opacity: { value: 1.0 }
-}
+</div></div><pre><code class="javascript">	{
+		opacity: { value: 1.0 }
+	}
 ] ),
-</code></pre>
+		</code></pre>
 
 
 <h2>normal_vert.glsl</h2>
@@ -89,9 +93,9 @@ opacity: { value: 1.0 }
 
 </code></pre>
 
-<input id="toggle11" type="checkbox"><label class="" for="toggle11">/* uv_pars_vertex.glsl */</label>
+<input id="toggle10" type="checkbox"><label class="" for="toggle10">/* uv_pars_vertex.glsl */</label>
 
-<div id="expand11" class=" expand"><pre><code class="glsl">
+<div id="expand10" class=" expand"><pre><code class="glsl">
 #if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP )
 
 	varying vec2 vUv;
@@ -100,9 +104,9 @@ opacity: { value: 1.0 }
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle12" type="checkbox"><label class="" for="toggle12">/* displacementmap_pars_vertex.glsl */</label>
+<input id="toggle11" type="checkbox"><label class="" for="toggle11">/* displacementmap_pars_vertex.glsl */</label>
 
-<div id="expand12" class=" expand"><pre><code class="glsl">
+<div id="expand11" class=" expand"><pre><code class="glsl">
 #ifdef USE_DISPLACEMENTMAP
 
 	uniform sampler2D displacementMap;
@@ -112,9 +116,9 @@ opacity: { value: 1.0 }
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle13" type="checkbox"><label class="" for="toggle13">/* morphtarget_pars_vertex.glsl */</label>
+<input id="toggle12" type="checkbox"><label class="" for="toggle12">/* morphtarget_pars_vertex.glsl */</label>
 
-<div id="expand13" class=" expand"><pre><code class="glsl">
+<div id="expand12" class=" expand"><pre><code class="glsl">
 #ifdef USE_MORPHTARGETS
 
 	#ifndef USE_MORPHNORMALS
@@ -129,9 +133,9 @@ opacity: { value: 1.0 }
 
 #endif</code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle14" type="checkbox"><label class="" for="toggle14">/* skinning_pars_vertex.glsl */</label>
+<input id="toggle13" type="checkbox"><label class="" for="toggle13">/* skinning_pars_vertex.glsl */</label>
 
-<div id="expand14" class=" expand"><pre><code class="glsl">
+<div id="expand13" class=" expand"><pre><code class="glsl">
 #ifdef USE_SKINNING
 
 	uniform mat4 bindMatrix;
@@ -180,9 +184,9 @@ opacity: { value: 1.0 }
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle15" type="checkbox"><label class="" for="toggle15">/* logdepthbuf_pars_vertex.glsl */</label>
+<input id="toggle14" type="checkbox"><label class="" for="toggle14">/* logdepthbuf_pars_vertex.glsl */</label>
 
-<div id="expand15" class=" expand"><pre><code class="glsl">
+<div id="expand14" class=" expand"><pre><code class="glsl">
 #ifdef USE_LOGDEPTHBUF
 
 	#ifdef USE_LOGDEPTHBUF_EXT
@@ -199,9 +203,9 @@ void main() {
 <pre><code class="glsl">
 </code></pre>
 
-<input id="toggle16" type="checkbox"><label class="indented" for="toggle16">/* uv_vertex.glsl */</label>
+<input id="toggle15" type="checkbox"><label class="indented" for="toggle15">/* uv_vertex.glsl */</label>
 
-<div id="expand16" class="indented expand"><pre><code class="glsl">
+<div id="expand15" class="indented expand"><pre><code class="glsl">
 #if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP )
 
 	vUv = ( uvTransform * vec3( uv, 1 ) ).xy;
@@ -209,16 +213,16 @@ void main() {
 #endif</code></pre></div><pre><code class="glsl">
 </code></pre>
 
-<input id="toggle17" type="checkbox"><label class="indented" for="toggle17">/* beginnormal_vertex.glsl */</label>
+<input id="toggle16" type="checkbox"><label class="indented" for="toggle16">/* beginnormal_vertex.glsl */</label>
 
-<div id="expand17" class="indented expand"><pre><code class="glsl">
+<div id="expand16" class="indented expand"><pre><code class="glsl">
 
 vec3 objectNormal = vec3( normal );
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle18" type="checkbox"><label class="indented" for="toggle18">/* morphnormal_vertex.glsl */</label>
+<input id="toggle17" type="checkbox"><label class="indented" for="toggle17">/* morphnormal_vertex.glsl */</label>
 
-<div id="expand18" class="indented expand"><pre><code class="glsl">
+<div id="expand17" class="indented expand"><pre><code class="glsl">
 #ifdef USE_MORPHNORMALS
 
 	objectNormal += ( morphNormal0 - normal ) * morphTargetInfluences[ 0 ];
@@ -229,9 +233,9 @@ vec3 objectNormal = vec3( normal );
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle19" type="checkbox"><label class="indented" for="toggle19">/* skinbase_vertex.glsl */</label>
+<input id="toggle18" type="checkbox"><label class="indented" for="toggle18">/* skinbase_vertex.glsl */</label>
 
-<div id="expand19" class="indented expand"><pre><code class="glsl">
+<div id="expand18" class="indented expand"><pre><code class="glsl">
 #ifdef USE_SKINNING
 
 	mat4 boneMatX = getBoneMatrix( skinIndex.x );
@@ -241,9 +245,9 @@ vec3 objectNormal = vec3( normal );
 
 #endif</code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle20" type="checkbox"><label class="indented" for="toggle20">/* skinnormal_vertex.glsl */</label>
+<input id="toggle19" type="checkbox"><label class="indented" for="toggle19">/* skinnormal_vertex.glsl */</label>
 
-<div id="expand20" class="indented expand"><pre><code class="glsl">
+<div id="expand19" class="indented expand"><pre><code class="glsl">
 #ifdef USE_SKINNING
 
 	mat4 skinMatrix = mat4( 0.0 );
@@ -258,9 +262,9 @@ vec3 objectNormal = vec3( normal );
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle21" type="checkbox"><label class="indented" for="toggle21">/* defaultnormal_vertex.glsl */</label>
+<input id="toggle20" type="checkbox"><label class="indented" for="toggle20">/* defaultnormal_vertex.glsl */</label>
 
-<div id="expand21" class="indented expand"><pre><code class="glsl">
+<div id="expand20" class="indented expand"><pre><code class="glsl">
 vec3 transformedNormal = normalMatrix * objectNormal;
 
 #ifdef FLIP_SIDED
@@ -277,16 +281,16 @@ vec3 transformedNormal = normalMatrix * objectNormal;
 
 </code></pre>
 
-<input id="toggle22" type="checkbox"><label class="indented" for="toggle22">/* begin_vertex.glsl */</label>
+<input id="toggle21" type="checkbox"><label class="indented" for="toggle21">/* begin_vertex.glsl */</label>
 
-<div id="expand22" class="indented expand"><pre><code class="glsl">
+<div id="expand21" class="indented expand"><pre><code class="glsl">
 
 vec3 transformed = vec3( position );
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle23" type="checkbox"><label class="indented" for="toggle23">/* morphtarget_vertex.glsl */</label>
+<input id="toggle22" type="checkbox"><label class="indented" for="toggle22">/* morphtarget_vertex.glsl */</label>
 
-<div id="expand23" class="indented expand"><pre><code class="glsl">
+<div id="expand22" class="indented expand"><pre><code class="glsl">
 #ifdef USE_MORPHTARGETS
 
 	transformed += ( morphTarget0 - position ) * morphTargetInfluences[ 0 ];
@@ -306,9 +310,9 @@ vec3 transformed = vec3( position );
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle24" type="checkbox"><label class="indented" for="toggle24">/* skinning_vertex.glsl */</label>
+<input id="toggle23" type="checkbox"><label class="indented" for="toggle23">/* skinning_vertex.glsl */</label>
 
-<div id="expand24" class="indented expand"><pre><code class="glsl">
+<div id="expand23" class="indented expand"><pre><code class="glsl">
 #ifdef USE_SKINNING
 
 	vec4 skinVertex = bindMatrix * vec4( transformed, 1.0 );
@@ -324,9 +328,9 @@ vec3 transformed = vec3( position );
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle25" type="checkbox"><label class="indented" for="toggle25">/* displacementmap_vertex.glsl */</label>
+<input id="toggle24" type="checkbox"><label class="indented" for="toggle24">/* displacementmap_vertex.glsl */</label>
 
-<div id="expand25" class="indented expand"><pre><code class="glsl">
+<div id="expand24" class="indented expand"><pre><code class="glsl">
 #ifdef USE_DISPLACEMENTMAP
 
 	transformed += normalize( objectNormal ) * ( texture2D( displacementMap, uv ).x * displacementScale + displacementBias );
@@ -334,17 +338,17 @@ vec3 transformed = vec3( position );
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle26" type="checkbox"><label class="indented" for="toggle26">/* project_vertex.glsl */</label>
+<input id="toggle25" type="checkbox"><label class="indented" for="toggle25">/* project_vertex.glsl */</label>
 
-<div id="expand26" class="indented expand"><pre><code class="glsl">
+<div id="expand25" class="indented expand"><pre><code class="glsl">
 vec4 mvPosition = modelViewMatrix * vec4( transformed, 1.0 );
 
 gl_Position = projectionMatrix * mvPosition;
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle27" type="checkbox"><label class="indented" for="toggle27">/* logdepthbuf_vertex.glsl */</label>
+<input id="toggle26" type="checkbox"><label class="indented" for="toggle26">/* logdepthbuf_vertex.glsl */</label>
 
-<div id="expand27" class="indented expand"><pre><code class="glsl">
+<div id="expand26" class="indented expand"><pre><code class="glsl">
 #ifdef USE_LOGDEPTHBUF
 
 	#ifdef USE_LOGDEPTHBUF_EXT
@@ -391,9 +395,9 @@ uniform float opacity;
 
 </code></pre>
 
-<input id="toggle28" type="checkbox"><label class="" for="toggle28">/* packing.glsl */</label>
+<input id="toggle27" type="checkbox"><label class="" for="toggle27">/* packing.glsl */</label>
 
-<div id="expand28" class=" expand"><pre><code class="glsl">
+<div id="expand27" class=" expand"><pre><code class="glsl">
 vec3 packNormalToRGB( const in vec3 normal ) {
 	return normalize( normal ) * 0.5 + 0.5;
 }
@@ -437,18 +441,18 @@ float perspectiveDepthToViewZ( const in float invClipZ, const in float near, con
 }
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle29" type="checkbox"><label class="" for="toggle29">/* uv_pars_fragment.glsl */</label>
+<input id="toggle28" type="checkbox"><label class="" for="toggle28">/* uv_pars_fragment.glsl */</label>
 
-<div id="expand29" class=" expand"><pre><code class="glsl">
+<div id="expand28" class=" expand"><pre><code class="glsl">
 #if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP )
 
 	varying vec2 vUv;
 
 #endif</code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle30" type="checkbox"><label class="" for="toggle30">/* bumpmap_pars_fragment.glsl */</label>
+<input id="toggle29" type="checkbox"><label class="" for="toggle29">/* bumpmap_pars_fragment.glsl */</label>
 
-<div id="expand30" class=" expand"><pre><code class="glsl">
+<div id="expand29" class=" expand"><pre><code class="glsl">
 #ifdef USE_BUMPMAP
 
 	uniform sampler2D bumpMap;
@@ -493,9 +497,9 @@ float perspectiveDepthToViewZ( const in float invClipZ, const in float near, con
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle31" type="checkbox"><label class="" for="toggle31">/* normalmap_pars_fragment.glsl */</label>
+<input id="toggle30" type="checkbox"><label class="" for="toggle30">/* normalmap_pars_fragment.glsl */</label>
 
-<div id="expand31" class=" expand"><pre><code class="glsl">
+<div id="expand30" class=" expand"><pre><code class="glsl">
 #ifdef USE_NORMALMAP
 
 	uniform sampler2D normalMap;
@@ -527,9 +531,9 @@ float perspectiveDepthToViewZ( const in float invClipZ, const in float near, con
 #endif
 </code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle32" type="checkbox"><label class="" for="toggle32">/* logdepthbuf_pars_fragment.glsl */</label>
+<input id="toggle31" type="checkbox"><label class="" for="toggle31">/* logdepthbuf_pars_fragment.glsl */</label>
 
-<div id="expand32" class=" expand"><pre><code class="glsl">
+<div id="expand31" class=" expand"><pre><code class="glsl">
 #ifdef USE_LOGDEPTHBUF
 
 	uniform float logDepthBufFC;
@@ -547,18 +551,18 @@ void main() {
 <pre><code class="glsl">
 </code></pre>
 
-<input id="toggle33" type="checkbox"><label class="indented" for="toggle33">/* logdepthbuf_fragment.glsl */</label>
+<input id="toggle32" type="checkbox"><label class="indented" for="toggle32">/* logdepthbuf_fragment.glsl */</label>
 
-<div id="expand33" class="indented expand"><pre><code class="glsl">
+<div id="expand32" class="indented expand"><pre><code class="glsl">
 #if defined( USE_LOGDEPTHBUF ) && defined( USE_LOGDEPTHBUF_EXT )
 
 	gl_FragDepthEXT = log2( vFragDepth ) * logDepthBufFC * 0.5;
 
 #endif</code></pre></div><pre><code class="glsl"></code></pre>
 
-<input id="toggle34" type="checkbox"><label class="indented" for="toggle34">/* normal_fragment.glsl */</label>
+<input id="toggle33" type="checkbox"><label class="indented" for="toggle33">/* normal_fragment.glsl */</label>
 
-<div id="expand34" class="indented expand"><pre><code class="glsl">
+<div id="expand33" class="indented expand"><pre><code class="glsl">
 #ifdef FLAT_SHADED
 
 	// Workaround for Adreno/Nexus5 not able able to do dFdx( vViewPosition ) ...
