@@ -35,10 +35,15 @@
 
 <div id="expand1" class="expand"><div class="indented"><pre><code class="javascript">{
 	diffuse: { value: new Color( 0xeeeeee ) },
+
 	opacity: { value: 1.0 },
+
 	map: { value: null },
+
 	uvTransform: { value: new Matrix3() },
+
 	alphaMap: { value: null },
+
 }</code></pre>
 </div></div><pre><code class="javascript"></code></pre>
 
@@ -47,9 +52,13 @@
 
 <div id="expand2" class="expand"><div class="indented"><pre><code class="javascript">{
 	envMap: { value: null },
+
 	flipEnvMap: { value: - 1 },
+
 	reflectivity: { value: 1.0 },
+
 	refractionRatio: { value: 0.98 }
+
 }</code></pre>
 </div></div><pre><code class="javascript"></code></pre>
 
@@ -58,7 +67,9 @@
 
 <div id="expand3" class="expand"><div class="indented"><pre><code class="javascript">{
 	aoMap: { value: null },
+
 	aoMapIntensity: { value: 1 }
+
 }</code></pre>
 </div></div><pre><code class="javascript"></code></pre>
 
@@ -67,7 +78,9 @@
 
 <div id="expand4" class="expand"><div class="indented"><pre><code class="javascript">{
 	lightMap: { value: null },
+
 	lightMapIntensity: { value: 1 }
+
 }</code></pre>
 </div></div><pre><code class="javascript"></code></pre>
 
@@ -76,6 +89,7 @@
 
 <div id="expand5" class="expand"><div class="indented"><pre><code class="javascript">{
 	emissiveMap: { value: null }
+
 }</code></pre>
 </div></div><pre><code class="javascript"></code></pre>
 
@@ -84,7 +98,9 @@
 
 <div id="expand6" class="expand"><div class="indented"><pre><code class="javascript">{
 	bumpMap: { value: null },
+
 	bumpScale: { value: 1 }
+
 }</code></pre>
 </div></div><pre><code class="javascript"></code></pre>
 
@@ -93,7 +109,9 @@
 
 <div id="expand7" class="expand"><div class="indented"><pre><code class="javascript">{
 	normalMap: { value: null },
+
 	normalScale: { value: new Vector2( 1, 1 ) }
+
 }</code></pre>
 </div></div><pre><code class="javascript"></code></pre>
 
@@ -102,8 +120,11 @@
 
 <div id="expand8" class="expand"><div class="indented"><pre><code class="javascript">{
 	displacementMap: { value: null },
+
 	displacementScale: { value: 1 },
+
 	displacementBias: { value: 0 }
+
 }</code></pre>
 </div></div><pre><code class="javascript"></code></pre>
 
@@ -112,6 +133,7 @@
 
 <div id="expand9" class="expand"><div class="indented"><pre><code class="javascript">{
 	roughnessMap: { value: null }
+
 }</code></pre>
 </div></div><pre><code class="javascript"></code></pre>
 
@@ -120,6 +142,7 @@
 
 <div id="expand10" class="expand"><div class="indented"><pre><code class="javascript">{
 	metalnessMap: { value: null }
+
 }</code></pre>
 </div></div><pre><code class="javascript"></code></pre>
 
@@ -128,9 +151,13 @@
 
 <div id="expand11" class="expand"><div class="indented"><pre><code class="javascript">{
 	fogDensity: { value: 0.00025 },
+
 	fogNear: { value: 1 },
+
 	fogFar: { value: 2000 },
+
 	fogColor: { value: new Color( 0xffffff ) }
+
 }</code></pre>
 </div></div><pre><code class="javascript"></code></pre>
 
@@ -139,57 +166,70 @@
 
 <div id="expand12" class="expand"><div class="indented"><pre><code class="javascript">{
 	ambientLightColor: { value: [] },
+
 	directionalLights: { value: [], properties: {
-	direction: {},
-	color: {},
-	shadow: {},
-	shadowBias: {},
-	shadowRadius: {},
-	shadowMapSize: {}
+		direction: {},
+		color: {},
+		shadow: {},
+		shadowBias: {},
+		shadowRadius: {},
+		shadowMapSize: {}
 	} },
+
 	directionalShadowMap: { value: [] },
+
 	directionalShadowMatrix: { value: [] },
+
 	spotLights: { value: [], properties: {
-	color: {},
-	position: {},
-	direction: {},
-	distance: {},
-	coneCos: {},
-	penumbraCos: {},
-	decay: {},
-	shadow: {},
-	shadowBias: {},
-	shadowRadius: {},
-	shadowMapSize: {}
+		color: {},
+		position: {},
+		direction: {},
+		distance: {},
+		coneCos: {},
+		penumbraCos: {},
+		decay: {},
+		shadow: {},
+		shadowBias: {},
+		shadowRadius: {},
+		shadowMapSize: {}
 	} },
+
 	spotShadowMap: { value: [] },
+
 	spotShadowMatrix: { value: [] },
+
 	pointLights: { value: [], properties: {
-	color: {},
-	position: {},
-	decay: {},
-	distance: {},
-	shadow: {},
-	shadowBias: {},
-	shadowRadius: {},
-	shadowMapSize: {},
-	shadowCameraNear: {},
-	shadowCameraFar: {}
+		color: {},
+		position: {},
+		decay: {},
+		distance: {},
+		shadow: {},
+		shadowBias: {},
+		shadowRadius: {},
+		shadowMapSize: {},
+		shadowCameraNear: {},
+		shadowCameraFar: {}
 	} },
+
 	pointShadowMap: { value: [] },
+
 	pointShadowMatrix: { value: [] },
+
 	hemisphereLights: { value: [], properties: {
-	direction: {},
-	skyColor: {},
-	groundColor: {}
+		direction: {},
+		skyColor: {},
+		groundColor: {}
 	} },
+
 	// TODO (abelnation): RectAreaLight BRDF data needs to be moved from example to main src
+
 	rectAreaLights: { value: [], properties: {
-	color: {},
-	position: {},
-	width: {},
-	height: {}
+		color: {},
+		position: {},
+		width: {},
+		height: {}
 	} }
+
 }</code></pre>
 </div></div><pre><code class="javascript">	{
 		emissive: { value: new Color( 0x000000 ) },
