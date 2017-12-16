@@ -30,7 +30,7 @@
 		<pre><code class='javascript'>uniforms: UniformsUtils.merge( [
 </code></pre>
 
-<input id="toggle1" type="checkbox"><label for="toggle1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* UniformsLib.points
+<input id="toggle1" type="checkbox"><label for="toggle1" class="indented">/* UniformsLib.points
  */</label>
 
 <div id="expand1" class="expand"><div class="indented"><pre><code class="javascript">{
@@ -47,9 +47,9 @@
 	uvTransform: { value: new Matrix3() }
 
 }</code></pre>
-</div></div><pre><code class="javascript"></code></pre>
+</div></div>
 
-<input id="toggle2" type="checkbox"><label for="toggle2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* UniformsLib.fog
+<input id="toggle2" type="checkbox"><label for="toggle2" class="indented">/* UniformsLib.fog
  */</label>
 
 <div id="expand2" class="expand"><div class="indented"><pre><code class="javascript">{
@@ -171,7 +171,7 @@ float linearToRelativeLuminance( const in vec3 color ) {
 	return dot( weights, color.rgb );
 
 }
-</code></pre></div><pre><code class="glsl"></code></pre>
+</code></pre></div>
 
 <input id="toggle6" type="checkbox"><label class="" for="toggle6">/* color_pars_vertex.glsl */</label>
 
@@ -180,7 +180,7 @@ float linearToRelativeLuminance( const in vec3 color ) {
 
 	varying vec3 vColor;
 
-#endif</code></pre></div><pre><code class="glsl"></code></pre>
+#endif</code></pre></div>
 
 <input id="toggle7" type="checkbox"><label class="" for="toggle7">/* fog_pars_vertex.glsl */</label>
 
@@ -190,7 +190,7 @@ float linearToRelativeLuminance( const in vec3 color ) {
   varying float fogDepth;
 
 #endif
-</code></pre></div><pre><code class="glsl"></code></pre>
+</code></pre></div>
 
 <input id="toggle8" type="checkbox"><label class="" for="toggle8">/* shadowmap_pars_vertex.glsl */</label>
 
@@ -227,7 +227,7 @@ float linearToRelativeLuminance( const in vec3 color ) {
 	*/
 
 #endif
-</code></pre></div><pre><code class="glsl"></code></pre>
+</code></pre></div>
 
 <input id="toggle9" type="checkbox"><label class="" for="toggle9">/* logdepthbuf_pars_vertex.glsl */</label>
 
@@ -242,7 +242,7 @@ float linearToRelativeLuminance( const in vec3 color ) {
 
 	uniform float logDepthBufFC;
 
-#endif</code></pre></div><pre><code class="glsl"></code></pre>
+#endif</code></pre></div>
 
 <input id="toggle10" type="checkbox"><label class="" for="toggle10">/* clipping_planes_pars_vertex.glsl */</label>
 
@@ -253,8 +253,7 @@ float linearToRelativeLuminance( const in vec3 color ) {
 </code></pre></div><pre><code class="glsl">
 void main() {
 </code></pre>
-<pre><code class="glsl">
-</code></pre>
+
 
 <input id="toggle11" type="checkbox"><label class="indented" for="toggle11">/* color_vertex.glsl */</label>
 
@@ -263,14 +262,14 @@ void main() {
 
 	vColor.xyz = color.xyz;
 
-#endif</code></pre></div><pre><code class="glsl"></code></pre>
+#endif</code></pre></div>
 
 <input id="toggle12" type="checkbox"><label class="indented" for="toggle12">/* begin_vertex.glsl */</label>
 
 <div id="expand12" class="indented expand"><pre><code class="glsl">
 
 vec3 transformed = vec3( position );
-</code></pre></div><pre><code class="glsl"></code></pre>
+</code></pre></div>
 
 <input id="toggle13" type="checkbox"><label class="indented" for="toggle13">/* project_vertex.glsl */</label>
 
@@ -305,7 +304,7 @@ gl_Position = projectionMatrix * mvPosition;
 	#endif
 
 #endif
-</code></pre></div><pre><code class="glsl"></code></pre>
+</code></pre></div>
 
 <input id="toggle15" type="checkbox"><label class="indented" for="toggle15">/* clipping_planes_vertex.glsl */</label>
 
@@ -314,7 +313,7 @@ gl_Position = projectionMatrix * mvPosition;
 	vViewPosition = - mvPosition.xyz;
 #endif
 
-</code></pre></div><pre><code class="glsl"></code></pre>
+</code></pre></div>
 
 <input id="toggle16" type="checkbox"><label class="indented" for="toggle16">/* worldpos_vertex.glsl */</label>
 
@@ -324,7 +323,7 @@ gl_Position = projectionMatrix * mvPosition;
 	vec4 worldPosition = modelMatrix * vec4( transformed, 1.0 );
 
 #endif
-</code></pre></div><pre><code class="glsl"></code></pre>
+</code></pre></div>
 
 <input id="toggle17" type="checkbox"><label class="indented" for="toggle17">/* shadowmap_vertex.glsl */</label>
 
@@ -370,7 +369,7 @@ gl_Position = projectionMatrix * mvPosition;
 	*/
 
 #endif
-</code></pre></div><pre><code class="glsl"></code></pre>
+</code></pre></div>
 
 <input id="toggle18" type="checkbox"><label class="indented" for="toggle18">/* fog_vertex.glsl */</label>
 
@@ -488,7 +487,7 @@ float linearToRelativeLuminance( const in vec3 color ) {
 	return dot( weights, color.rgb );
 
 }
-</code></pre></div><pre><code class="glsl"></code></pre>
+</code></pre></div>
 
 <input id="toggle20" type="checkbox"><label class="" for="toggle20">/* packing.glsl */</label>
 
@@ -534,7 +533,7 @@ float viewZToPerspectiveDepth( const in float viewZ, const in float near, const 
 float perspectiveDepthToViewZ( const in float invClipZ, const in float near, const in float far ) {
 	return ( near * far ) / ( ( far - near ) * invClipZ - far );
 }
-</code></pre></div><pre><code class="glsl"></code></pre>
+</code></pre></div>
 
 <input id="toggle21" type="checkbox"><label class="" for="toggle21">/* color_pars_fragment.glsl */</label>
 
@@ -544,7 +543,7 @@ float perspectiveDepthToViewZ( const in float invClipZ, const in float near, con
 	varying vec3 vColor;
 
 #endif
-</code></pre></div><pre><code class="glsl"></code></pre>
+</code></pre></div>
 
 <input id="toggle22" type="checkbox"><label class="" for="toggle22">/* map_particle_pars_fragment.glsl */</label>
 
@@ -555,7 +554,7 @@ float perspectiveDepthToViewZ( const in float invClipZ, const in float near, con
 	uniform sampler2D map;
 
 #endif
-</code></pre></div><pre><code class="glsl"></code></pre>
+</code></pre></div>
 
 <input id="toggle23" type="checkbox"><label class="" for="toggle23">/* fog_pars_fragment.glsl */</label>
 
@@ -577,7 +576,7 @@ float perspectiveDepthToViewZ( const in float invClipZ, const in float near, con
 	#endif
 
 #endif
-</code></pre></div><pre><code class="glsl"></code></pre>
+</code></pre></div>
 
 <input id="toggle24" type="checkbox"><label class="" for="toggle24">/* shadowmap_pars_fragment.glsl */</label>
 
@@ -825,7 +824,7 @@ float perspectiveDepthToViewZ( const in float invClipZ, const in float near, con
 	}
 
 #endif
-</code></pre></div><pre><code class="glsl"></code></pre>
+</code></pre></div>
 
 <input id="toggle25" type="checkbox"><label class="" for="toggle25">/* logdepthbuf_pars_fragment.glsl */</label>
 
@@ -841,7 +840,7 @@ float perspectiveDepthToViewZ( const in float invClipZ, const in float near, con
 	#endif
 
 #endif
-</code></pre></div><pre><code class="glsl"></code></pre>
+</code></pre></div>
 
 <input id="toggle26" type="checkbox"><label class="" for="toggle26">/* clipping_planes_pars_fragment.glsl */</label>
 
@@ -858,8 +857,7 @@ float perspectiveDepthToViewZ( const in float invClipZ, const in float near, con
 </code></pre></div><pre><code class="glsl">
 void main() {
 </code></pre>
-<pre><code class="glsl">
-</code></pre>
+
 
 <input id="toggle27" type="checkbox"><label class="indented" for="toggle27">/* clipping_planes_fragment.glsl */</label>
 
@@ -899,7 +897,7 @@ void main() {
 
 	gl_FragDepthEXT = log2( vFragDepth ) * logDepthBufFC * 0.5;
 
-#endif</code></pre></div><pre><code class="glsl"></code></pre>
+#endif</code></pre></div>
 
 <input id="toggle29" type="checkbox"><label class="indented" for="toggle29">/* map_particle_fragment.glsl */</label>
 
@@ -911,7 +909,7 @@ void main() {
 	diffuseColor *= mapTexelToLinear( mapTexel );
 
 #endif
-</code></pre></div><pre><code class="glsl"></code></pre>
+</code></pre></div>
 
 <input id="toggle30" type="checkbox"><label class="indented" for="toggle30">/* color_fragment.glsl */</label>
 
@@ -920,7 +918,7 @@ void main() {
 
 	diffuseColor.rgb *= vColor;
 
-#endif</code></pre></div><pre><code class="glsl"></code></pre>
+#endif</code></pre></div>
 
 <input id="toggle31" type="checkbox"><label class="indented" for="toggle31">/* alphatest_fragment.glsl */</label>
 
@@ -946,7 +944,7 @@ void main() {
 	gl_FragColor.rgb *= gl_FragColor.a;
 
 #endif
-</code></pre></div><pre><code class="glsl"></code></pre>
+</code></pre></div>
 
 <input id="toggle33" type="checkbox"><label class="indented" for="toggle33">/* tonemapping_fragment.glsl */</label>
 
@@ -956,13 +954,13 @@ void main() {
   gl_FragColor.rgb = toneMapping( gl_FragColor.rgb );
 
 #endif
-</code></pre></div><pre><code class="glsl"></code></pre>
+</code></pre></div>
 
 <input id="toggle34" type="checkbox"><label class="indented" for="toggle34">/* encodings_fragment.glsl */</label>
 
 <div id="expand34" class="indented expand"><pre><code class="glsl">
   gl_FragColor = linearToOutputTexel( gl_FragColor );
-</code></pre></div><pre><code class="glsl"></code></pre>
+</code></pre></div>
 
 <input id="toggle35" type="checkbox"><label class="indented" for="toggle35">/* fog_fragment.glsl */</label>
 
