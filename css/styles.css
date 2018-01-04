@@ -31,7 +31,7 @@ label::before {
 }
 a:link, a:visited {
   text-decoration: none;
-  border-bottom: 1px solid #777;
+  border-bottom: 1px solid #555;
   color: #999;
 }
 a:hover {
