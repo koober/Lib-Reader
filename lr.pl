@@ -156,6 +156,7 @@ return qq{<br><p>There are 164 instances of "endif" in ShaderChunks.</p>
 }
 sub todo {
 return qq{<br><h3>To do</h3><div class="indented">
+<p> Sample custom shader</p>
 <p> Limit frag level navigation to 'mesh' pages?</p>
 <p>Indentation not robust in uniforms, could build them as ''chunk'' files first.</p>
 <p><del>Surplus code tags, affects styles</del></p></div>
