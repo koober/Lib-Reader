@@ -34,6 +34,8 @@ foreach my $shader ( @files ) {
 	}
 }
 #create a set of dirty html files in temp folder
+
+mkdir $tempurl unless -d $tempurl; # Check if dir exists. If not create it.
 foreach( @shaders ) {
 	makeHTML( $_ );
 }
