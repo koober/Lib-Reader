@@ -8,7 +8,7 @@
 	<script src="lib/highlight.pack.js"></script>
   </head>
   <body>
-	<h3><a href="https://threejs.org">three.js</a> <a href="https://github.com/mrdoob/three.js">R88</a></h3>
+	<h3><a href="https://threejs.org">three.js</a> <a href="https://github.com/mrdoob/three.js">R94</a></h3>
 	<br>
 <ul id="">
 <li><a href="cube.html#">cube</a></li>
@@ -184,41 +184,21 @@ float linearToRelativeLuminance( const in vec3 color ) {
 </code></pre></div>
 
 
-<input id="toggle8" type="checkbox"><label for="toggle8" class="">/* shadowmap_pars_vertex.glsl */</label>
+<input id="toggle8" type="checkbox"><label for="toggle8" class="">/* morphtarget_pars_vertex.glsl */</label>
 <div id="expand8" class=" expand"><pre><code class="glsl">
-#ifdef USE_SHADOWMAP
+#ifdef USE_MORPHTARGETS
 
-	#if NUM_DIR_LIGHTS > 0
+	#ifndef USE_MORPHNORMALS
 
-		uniform mat4 directionalShadowMatrix[ NUM_DIR_LIGHTS ];
-		varying vec4 vDirectionalShadowCoord[ NUM_DIR_LIGHTS ];
+	uniform float morphTargetInfluences[ 8 ];
 
-	#endif
+	#else
 
-	#if NUM_SPOT_LIGHTS > 0
-
-		uniform mat4 spotShadowMatrix[ NUM_SPOT_LIGHTS ];
-		varying vec4 vSpotShadowCoord[ NUM_SPOT_LIGHTS ];
+	uniform float morphTargetInfluences[ 4 ];
 
 	#endif
 
-	#if NUM_POINT_LIGHTS > 0
-
-		uniform mat4 pointShadowMatrix[ NUM_POINT_LIGHTS ];
-		varying vec4 vPointShadowCoord[ NUM_POINT_LIGHTS ];
-
-	#endif
-
-	/*
-	#if NUM_RECT_AREA_LIGHTS > 0
-
-		// TODO (abelnation): uniforms for area light shadows
-
-	#endif
-	*/
-
-#endif
-</code></pre></div>
+#endif</code></pre></div>
 
 
 <input id="toggle9" type="checkbox"><label for="toggle9" class="">/* logdepthbuf_pars_vertex.glsl */</label>
@@ -263,8 +243,30 @@ vec3 transformed = vec3( position );
 </code></pre></div>
 
 
-<input id="toggle13" type="checkbox"><label for="toggle13" class="indented">/* project_vertex.glsl */</label>
+<input id="toggle13" type="checkbox"><label for="toggle13" class="indented">/* morphtarget_vertex.glsl */</label>
 <div id="expand13" class="indented expand"><pre><code class="glsl">
+#ifdef USE_MORPHTARGETS
+
+	transformed += ( morphTarget0 - position ) * morphTargetInfluences[ 0 ];
+	transformed += ( morphTarget1 - position ) * morphTargetInfluences[ 1 ];
+	transformed += ( morphTarget2 - position ) * morphTargetInfluences[ 2 ];
+	transformed += ( morphTarget3 - position ) * morphTargetInfluences[ 3 ];
+
+	#ifndef USE_MORPHNORMALS
+
+	transformed += ( morphTarget4 - position ) * morphTargetInfluences[ 4 ];
+	transformed += ( morphTarget5 - position ) * morphTargetInfluences[ 5 ];
+	transformed += ( morphTarget6 - position ) * morphTargetInfluences[ 6 ];
+	transformed += ( morphTarget7 - position ) * morphTargetInfluences[ 7 ];
+
+	#endif
+
+#endif
+</code></pre></div>
+
+
+<input id="toggle14" type="checkbox"><label for="toggle14" class="indented">/* project_vertex.glsl */</label>
+<div id="expand14" class="indented expand"><pre><code class="glsl">
 vec4 mvPosition = modelViewMatrix * vec4( transformed, 1.0 );
 
 gl_Position = projectionMatrix * mvPosition;
@@ -278,8 +280,8 @@ gl_Position = projectionMatrix * mvPosition;
 
 </code></pre>
 
-<input id="toggle14" type="checkbox"><label for="toggle14" class="indented">/* logdepthbuf_vertex.glsl */</label>
-<div id="expand14" class="indented expand"><pre><code class="glsl">
+<input id="toggle15" type="checkbox"><label for="toggle15" class="indented">/* logdepthbuf_vertex.glsl */</label>
+<div id="expand15" class="indented expand"><pre><code class="glsl">
 #ifdef USE_LOGDEPTHBUF
 
 	#ifdef USE_LOGDEPTHBUF_EXT
@@ -298,8 +300,8 @@ gl_Position = projectionMatrix * mvPosition;
 </code></pre></div>
 
 
-<input id="toggle15" type="checkbox"><label for="toggle15" class="indented">/* clipping_planes_vertex.glsl */</label>
-<div id="expand15" class="indented expand"><pre><code class="glsl">
+<input id="toggle16" type="checkbox"><label for="toggle16" class="indented">/* clipping_planes_vertex.glsl */</label>
+<div id="expand16" class="indented expand"><pre><code class="glsl">
 #if NUM_CLIPPING_PLANES > 0 && ! defined( PHYSICAL ) && ! defined( PHONG )
 	vViewPosition = - mvPosition.xyz;
 #endif
@@ -307,57 +309,11 @@ gl_Position = projectionMatrix * mvPosition;
 </code></pre></div>
 
 
-<input id="toggle16" type="checkbox"><label for="toggle16" class="indented">/* worldpos_vertex.glsl */</label>
-<div id="expand16" class="indented expand"><pre><code class="glsl">
+<input id="toggle17" type="checkbox"><label for="toggle17" class="indented">/* worldpos_vertex.glsl */</label>
+<div id="expand17" class="indented expand"><pre><code class="glsl">
 #if defined( USE_ENVMAP ) || defined( DISTANCE ) || defined ( USE_SHADOWMAP )
 
 	vec4 worldPosition = modelMatrix * vec4( transformed, 1.0 );
-
-#endif
-</code></pre></div>
-
-
-<input id="toggle17" type="checkbox"><label for="toggle17" class="indented">/* shadowmap_vertex.glsl */</label>
-<div id="expand17" class="indented expand"><pre><code class="glsl">
-#ifdef USE_SHADOWMAP
-
-	#if NUM_DIR_LIGHTS > 0
-
-	for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {
-
-		vDirectionalShadowCoord[ i ] = directionalShadowMatrix[ i ] * worldPosition;
-
-	}
-
-	#endif
-
-	#if NUM_SPOT_LIGHTS > 0
-
-	for ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {
-
-		vSpotShadowCoord[ i ] = spotShadowMatrix[ i ] * worldPosition;
-
-	}
-
-	#endif
-
-	#if NUM_POINT_LIGHTS > 0
-
-	for ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {
-
-		vPointShadowCoord[ i ] = pointShadowMatrix[ i ] * worldPosition;
-
-	}
-
-	#endif
-
-	/*
-	#if NUM_RECT_AREA_LIGHTS > 0
-
-		// TODO (abelnation): update vAreaShadowCoord with area light info
-
-	#endif
-	*/
 
 #endif
 </code></pre></div>
@@ -587,257 +543,8 @@ float perspectiveDepthToViewZ( const in float invClipZ, const in float near, con
 </code></pre></div>
 
 
-<input id="toggle24" type="checkbox"><label for="toggle24" class="">/* shadowmap_pars_fragment.glsl */</label>
+<input id="toggle24" type="checkbox"><label for="toggle24" class="">/* logdepthbuf_pars_fragment.glsl */</label>
 <div id="expand24" class=" expand"><pre><code class="glsl">
-#ifdef USE_SHADOWMAP
-
-	#if NUM_DIR_LIGHTS > 0
-
-		uniform sampler2D directionalShadowMap[ NUM_DIR_LIGHTS ];
-		varying vec4 vDirectionalShadowCoord[ NUM_DIR_LIGHTS ];
-
-	#endif
-
-	#if NUM_SPOT_LIGHTS > 0
-
-		uniform sampler2D spotShadowMap[ NUM_SPOT_LIGHTS ];
-		varying vec4 vSpotShadowCoord[ NUM_SPOT_LIGHTS ];
-
-	#endif
-
-	#if NUM_POINT_LIGHTS > 0
-
-		uniform sampler2D pointShadowMap[ NUM_POINT_LIGHTS ];
-		varying vec4 vPointShadowCoord[ NUM_POINT_LIGHTS ];
-
-	#endif
-
-	/*
-	#if NUM_RECT_AREA_LIGHTS > 0
-
-		// TODO (abelnation): create uniforms for area light shadows
-
-	#endif
-	*/
-
-	float texture2DCompare( sampler2D depths, vec2 uv, float compare ) {
-
-		return step( compare, unpackRGBAToDepth( texture2D( depths, uv ) ) );
-
-	}
-
-	float texture2DShadowLerp( sampler2D depths, vec2 size, vec2 uv, float compare ) {
-
-		const vec2 offset = vec2( 0.0, 1.0 );
-
-		vec2 texelSize = vec2( 1.0 ) / size;
-		vec2 centroidUV = floor( uv * size + 0.5 ) / size;
-
-		float lb = texture2DCompare( depths, centroidUV + texelSize * offset.xx, compare );
-		float lt = texture2DCompare( depths, centroidUV + texelSize * offset.xy, compare );
-		float rb = texture2DCompare( depths, centroidUV + texelSize * offset.yx, compare );
-		float rt = texture2DCompare( depths, centroidUV + texelSize * offset.yy, compare );
-
-		vec2 f = fract( uv * size + 0.5 );
-
-		float a = mix( lb, lt, f.y );
-		float b = mix( rb, rt, f.y );
-		float c = mix( a, b, f.x );
-
-		return c;
-
-	}
-
-	float getShadow( sampler2D shadowMap, vec2 shadowMapSize, float shadowBias, float shadowRadius, vec4 shadowCoord ) {
-
-		float shadow = 1.0;
-
-		shadowCoord.xyz /= shadowCoord.w;
-		shadowCoord.z += shadowBias;
-
-		// if ( something && something ) breaks ATI OpenGL shader compiler
-		// if ( all( something, something ) ) using this instead
-
-		bvec4 inFrustumVec = bvec4 ( shadowCoord.x >= 0.0, shadowCoord.x <= 1.0, shadowCoord.y >= 0.0, shadowCoord.y <= 1.0 );
-		bool inFrustum = all( inFrustumVec );
-
-		bvec2 frustumTestVec = bvec2( inFrustum, shadowCoord.z <= 1.0 );
-
-		bool frustumTest = all( frustumTestVec );
-
-		if ( frustumTest ) {
-
-		#if defined( SHADOWMAP_TYPE_PCF )
-
-			vec2 texelSize = vec2( 1.0 ) / shadowMapSize;
-
-			float dx0 = - texelSize.x * shadowRadius;
-			float dy0 = - texelSize.y * shadowRadius;
-			float dx1 = + texelSize.x * shadowRadius;
-			float dy1 = + texelSize.y * shadowRadius;
-
-			shadow = (
-				texture2DCompare( shadowMap, shadowCoord.xy + vec2( dx0, dy0 ), shadowCoord.z ) +
-				texture2DCompare( shadowMap, shadowCoord.xy + vec2( 0.0, dy0 ), shadowCoord.z ) +
-				texture2DCompare( shadowMap, shadowCoord.xy + vec2( dx1, dy0 ), shadowCoord.z ) +
-				texture2DCompare( shadowMap, shadowCoord.xy + vec2( dx0, 0.0 ), shadowCoord.z ) +
-				texture2DCompare( shadowMap, shadowCoord.xy, shadowCoord.z ) +
-				texture2DCompare( shadowMap, shadowCoord.xy + vec2( dx1, 0.0 ), shadowCoord.z ) +
-				texture2DCompare( shadowMap, shadowCoord.xy + vec2( dx0, dy1 ), shadowCoord.z ) +
-				texture2DCompare( shadowMap, shadowCoord.xy + vec2( 0.0, dy1 ), shadowCoord.z ) +
-				texture2DCompare( shadowMap, shadowCoord.xy + vec2( dx1, dy1 ), shadowCoord.z )
-			) * ( 1.0 / 9.0 );
-
-		#elif defined( SHADOWMAP_TYPE_PCF_SOFT )
-
-			vec2 texelSize = vec2( 1.0 ) / shadowMapSize;
-
-			float dx0 = - texelSize.x * shadowRadius;
-			float dy0 = - texelSize.y * shadowRadius;
-			float dx1 = + texelSize.x * shadowRadius;
-			float dy1 = + texelSize.y * shadowRadius;
-
-			shadow = (
-				texture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( dx0, dy0 ), shadowCoord.z ) +
-				texture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( 0.0, dy0 ), shadowCoord.z ) +
-				texture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( dx1, dy0 ), shadowCoord.z ) +
-				texture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( dx0, 0.0 ), shadowCoord.z ) +
-				texture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy, shadowCoord.z ) +
-				texture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( dx1, 0.0 ), shadowCoord.z ) +
-				texture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( dx0, dy1 ), shadowCoord.z ) +
-				texture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( 0.0, dy1 ), shadowCoord.z ) +
-				texture2DShadowLerp( shadowMap, shadowMapSize, shadowCoord.xy + vec2( dx1, dy1 ), shadowCoord.z )
-			) * ( 1.0 / 9.0 );
-
-		#else // no percentage-closer filtering:
-
-			shadow = texture2DCompare( shadowMap, shadowCoord.xy, shadowCoord.z );
-
-		#endif
-
-		}
-
-		return shadow;
-
-	}
-
-	// cubeToUV() maps a 3D direction vector suitable for cube texture mapping to a 2D
-	// vector suitable for 2D texture mapping. This code uses the following layout for the
-	// 2D texture:
-	//
-	// xzXZ
-	//  y Y
-	//
-	// Y - Positive y direction
-	// y - Negative y direction
-	// X - Positive x direction
-	// x - Negative x direction
-	// Z - Positive z direction
-	// z - Negative z direction
-	//
-	// Source and test bed:
-	// <a href="https://gist.github.com/tschw/da10c43c467ce8afd0c4">https://gist.github.com/tschw/da10c43c467ce8afd0c4</a>
-
-
-	vec2 cubeToUV( vec3 v, float texelSizeY ) {
-
-		// Number of texels to avoid at the edge of each square
-
-		vec3 absV = abs( v );
-
-		// Intersect unit cube
-
-		float scaleToCube = 1.0 / max( absV.x, max( absV.y, absV.z ) );
-		absV *= scaleToCube;
-
-		// Apply scale to avoid seams
-
-		// two texels less per square (one texel will do for NEAREST)
-		v *= scaleToCube * ( 1.0 - 2.0 * texelSizeY );
-
-		// Unwrap
-
-		// space: -1 ... 1 range for each square
-		//
-		// #X##		dim    := ( 4 , 2 )
-		//  # #		center := ( 1 , 1 )
-
-		vec2 planar = v.xy;
-
-		float almostATexel = 1.5 * texelSizeY;
-		float almostOne = 1.0 - almostATexel;
-
-		if ( absV.z >= almostOne ) {
-
-			if ( v.z > 0.0 )
-				planar.x = 4.0 - v.x;
-
-		} else if ( absV.x >= almostOne ) {
-
-			float signX = sign( v.x );
-			planar.x = v.z * signX + 2.0 * signX;
-
-		} else if ( absV.y >= almostOne ) {
-
-			float signY = sign( v.y );
-			planar.x = v.x + 2.0 * signY + 2.0;
-			planar.y = v.z * signY - 2.0;
-
-		}
-
-		// Transform to UV space
-
-		// scale := 0.5 / dim
-		// translate := ( center + 0.5 ) / dim
-		return vec2( 0.125, 0.25 ) * planar + vec2( 0.375, 0.75 );
-
-	}
-
-	float getPointShadow( sampler2D shadowMap, vec2 shadowMapSize, float shadowBias, float shadowRadius, vec4 shadowCoord, float shadowCameraNear, float shadowCameraFar ) {
-
-		vec2 texelSize = vec2( 1.0 ) / ( shadowMapSize * vec2( 4.0, 2.0 ) );
-
-		// for point lights, the uniform @vShadowCoord is re-purposed to hold
-		// the vector from the light to the world-space position of the fragment.
-		vec3 lightToPosition = shadowCoord.xyz;
-
-		// dp = normalized distance from light to fragment position
-		float dp = ( length( lightToPosition ) - shadowCameraNear ) / ( shadowCameraFar - shadowCameraNear ); // need to clamp?
-		dp += shadowBias;
-
-		// bd3D = base direction 3D
-		vec3 bd3D = normalize( lightToPosition );
-
-		#if defined( SHADOWMAP_TYPE_PCF ) || defined( SHADOWMAP_TYPE_PCF_SOFT )
-
-			vec2 offset = vec2( - 1, 1 ) * shadowRadius * texelSize.y;
-
-			return (
-				texture2DCompare( shadowMap, cubeToUV( bd3D + offset.xyy, texelSize.y ), dp ) +
-				texture2DCompare( shadowMap, cubeToUV( bd3D + offset.yyy, texelSize.y ), dp ) +
-				texture2DCompare( shadowMap, cubeToUV( bd3D + offset.xyx, texelSize.y ), dp ) +
-				texture2DCompare( shadowMap, cubeToUV( bd3D + offset.yyx, texelSize.y ), dp ) +
-				texture2DCompare( shadowMap, cubeToUV( bd3D, texelSize.y ), dp ) +
-				texture2DCompare( shadowMap, cubeToUV( bd3D + offset.xxy, texelSize.y ), dp ) +
-				texture2DCompare( shadowMap, cubeToUV( bd3D + offset.yxy, texelSize.y ), dp ) +
-				texture2DCompare( shadowMap, cubeToUV( bd3D + offset.xxx, texelSize.y ), dp ) +
-				texture2DCompare( shadowMap, cubeToUV( bd3D + offset.yxx, texelSize.y ), dp )
-			) * ( 1.0 / 9.0 );
-
-		#else // no percentage-closer filtering
-
-			return texture2DCompare( shadowMap, cubeToUV( bd3D, texelSize.y ), dp );
-
-		#endif
-
-	}
-
-#endif
-</code></pre></div>
-
-
-<input id="toggle25" type="checkbox"><label for="toggle25" class="">/* logdepthbuf_pars_fragment.glsl */</label>
-<div id="expand25" class=" expand"><pre><code class="glsl">
 #ifdef USE_LOGDEPTHBUF
 
 	uniform float logDepthBufFC;
@@ -852,8 +559,8 @@ float perspectiveDepthToViewZ( const in float invClipZ, const in float near, con
 </code></pre></div>
 
 
-<input id="toggle26" type="checkbox"><label for="toggle26" class="">/* clipping_planes_pars_fragment.glsl */</label>
-<div id="expand26" class=" expand"><pre><code class="glsl">
+<input id="toggle25" type="checkbox"><label for="toggle25" class="">/* clipping_planes_pars_fragment.glsl */</label>
+<div id="expand25" class=" expand"><pre><code class="glsl">
 #if NUM_CLIPPING_PLANES > 0
 
 	#if ! defined( PHYSICAL ) && ! defined( PHONG )
@@ -869,27 +576,34 @@ void main() {
 </code></pre>
 
 
-<input id="toggle27" type="checkbox"><label for="toggle27" class="indented">/* clipping_planes_fragment.glsl */</label>
-<div id="expand27" class="indented expand"><pre><code class="glsl">
+<input id="toggle26" type="checkbox"><label for="toggle26" class="indented">/* clipping_planes_fragment.glsl */</label>
+<div id="expand26" class="indented expand"><pre><code class="glsl">
 #if NUM_CLIPPING_PLANES > 0
 
-	for ( int i = 0; i < UNION_CLIPPING_PLANES; ++ i ) {
+	vec4 plane;
 
-		vec4 plane = clippingPlanes[ i ];
+	#pragma unroll_loop
+	for ( int i = 0; i < UNION_CLIPPING_PLANES; i ++ ) {
+
+		plane = clippingPlanes[ i ];
 		if ( dot( vViewPosition, plane.xyz ) > plane.w ) discard;
 
 	}
-		
+
 	#if UNION_CLIPPING_PLANES < NUM_CLIPPING_PLANES
 
 		bool clipped = true;
-		for ( int i = UNION_CLIPPING_PLANES; i < NUM_CLIPPING_PLANES; ++ i ) {
-			vec4 plane = clippingPlanes[ i ];
+
+		#pragma unroll_loop
+		for ( int i = UNION_CLIPPING_PLANES; i < NUM_CLIPPING_PLANES; i ++ ) {
+
+			plane = clippingPlanes[ i ];
 			clipped = ( dot( vViewPosition, plane.xyz ) > plane.w ) && clipped;
+
 		}
 
 		if ( clipped ) discard;
-	
+
 	#endif
 
 #endif
@@ -900,8 +614,8 @@ void main() {
 
 </code></pre>
 
-<input id="toggle28" type="checkbox"><label for="toggle28" class="indented">/* logdepthbuf_fragment.glsl */</label>
-<div id="expand28" class="indented expand"><pre><code class="glsl">
+<input id="toggle27" type="checkbox"><label for="toggle27" class="indented">/* logdepthbuf_fragment.glsl */</label>
+<div id="expand27" class="indented expand"><pre><code class="glsl">
 #if defined( USE_LOGDEPTHBUF ) && defined( USE_LOGDEPTHBUF_EXT )
 
 	gl_FragDepthEXT = log2( vFragDepth ) * logDepthBufFC * 0.5;
@@ -909,8 +623,8 @@ void main() {
 #endif</code></pre></div>
 
 
-<input id="toggle29" type="checkbox"><label for="toggle29" class="indented">/* map_particle_fragment.glsl */</label>
-<div id="expand29" class="indented expand"><pre><code class="glsl">
+<input id="toggle28" type="checkbox"><label for="toggle28" class="indented">/* map_particle_fragment.glsl */</label>
+<div id="expand28" class="indented expand"><pre><code class="glsl">
 #ifdef USE_MAP
 
 	vec2 uv = ( uvTransform * vec3( gl_PointCoord.x, 1.0 - gl_PointCoord.y, 1 ) ).xy;
@@ -921,8 +635,8 @@ void main() {
 </code></pre></div>
 
 
-<input id="toggle30" type="checkbox"><label for="toggle30" class="indented">/* color_fragment.glsl */</label>
-<div id="expand30" class="indented expand"><pre><code class="glsl">
+<input id="toggle29" type="checkbox"><label for="toggle29" class="indented">/* color_fragment.glsl */</label>
+<div id="expand29" class="indented expand"><pre><code class="glsl">
 #ifdef USE_COLOR
 
 	diffuseColor.rgb *= vColor;
@@ -930,8 +644,8 @@ void main() {
 #endif</code></pre></div>
 
 
-<input id="toggle31" type="checkbox"><label for="toggle31" class="indented">/* alphatest_fragment.glsl */</label>
-<div id="expand31" class="indented expand"><pre><code class="glsl">
+<input id="toggle30" type="checkbox"><label for="toggle30" class="indented">/* alphatest_fragment.glsl */</label>
+<div id="expand30" class="indented expand"><pre><code class="glsl">
 #ifdef ALPHATEST
 
 	if ( diffuseColor.a < ALPHATEST ) discard;
@@ -945,8 +659,8 @@ void main() {
 
 </code></pre>
 
-<input id="toggle32" type="checkbox"><label for="toggle32" class="indented">/* premultiplied_alpha_fragment.glsl */</label>
-<div id="expand32" class="indented expand"><pre><code class="glsl">
+<input id="toggle31" type="checkbox"><label for="toggle31" class="indented">/* premultiplied_alpha_fragment.glsl */</label>
+<div id="expand31" class="indented expand"><pre><code class="glsl">
 #ifdef PREMULTIPLIED_ALPHA
 
 	// Get get normal blending with premultipled, use with CustomBlending, OneFactor, OneMinusSrcAlphaFactor, AddEquation.
@@ -956,8 +670,8 @@ void main() {
 </code></pre></div>
 
 
-<input id="toggle33" type="checkbox"><label for="toggle33" class="indented">/* tonemapping_fragment.glsl */</label>
-<div id="expand33" class="indented expand"><pre><code class="glsl">
+<input id="toggle32" type="checkbox"><label for="toggle32" class="indented">/* tonemapping_fragment.glsl */</label>
+<div id="expand32" class="indented expand"><pre><code class="glsl">
 #if defined( TONE_MAPPING )
 
   gl_FragColor.rgb = toneMapping( gl_FragColor.rgb );
@@ -966,14 +680,14 @@ void main() {
 </code></pre></div>
 
 
-<input id="toggle34" type="checkbox"><label for="toggle34" class="indented">/* encodings_fragment.glsl */</label>
-<div id="expand34" class="indented expand"><pre><code class="glsl">
+<input id="toggle33" type="checkbox"><label for="toggle33" class="indented">/* encodings_fragment.glsl */</label>
+<div id="expand33" class="indented expand"><pre><code class="glsl">
   gl_FragColor = linearToOutputTexel( gl_FragColor );
 </code></pre></div>
 
 
-<input id="toggle35" type="checkbox"><label for="toggle35" class="indented">/* fog_fragment.glsl */</label>
-<div id="expand35" class="indented expand"><pre><code class="glsl">
+<input id="toggle34" type="checkbox"><label for="toggle34" class="indented">/* fog_fragment.glsl */</label>
+<div id="expand34" class="indented expand"><pre><code class="glsl">
 #ifdef USE_FOG
 
 	#ifdef FOG_EXP2

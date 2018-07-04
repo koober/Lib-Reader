@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 
-my $path = '../threejs89/src/renderers/shaders/';
+my $path = '../threejs94/src/renderers/shaders/';
 my $liburl = $path . 'ShaderLib/'; # also urls at line xxx, xxx and xxx.
 my @shaders;
 
@@ -57,7 +57,7 @@ foreach my $tempfile ( @tempfiles ) {
 foreach( @tempshaders ) {
     cleanHTML( $_ );
 }
-#stats from line 147, currently counting endifs, not pows!
+#stats from line 473, currently counting endifs, not pows!
 my @pows;
 my @powfiles;
 my $totalpows = 0;
@@ -67,7 +67,7 @@ for my $i (0 .. $#pows) {
     $totalpows += $pows[$i];
 }
 #print 'A total of ' . $totalpows . ' occurrences of "endif".';
-
+#print unusedchunks();
 sub httplinks { #index list
 	my @result;
 	foreach my $ref ( @httprefs ) {
@@ -137,7 +137,7 @@ return qq{ )</title>
 	<script src="lib/highlight.pack.js"></script>
   </head>
   <body>
-	<h3><a href="https://threejs.org">three.js</a> <a href="https://github.com/mrdoob/three.js">R88</a></h3>
+	<h3><a href="https://threejs.org">three.js</a> <a href="https://github.com/mrdoob/three.js">R94</a></h3>
 	<br>};
 } 
 sub prefoot {
@@ -153,7 +153,7 @@ return qq{<br><h1>Lib Reader</h1>
 <br><p>Displays the contents of ShaderLib in three.js, including links to contextual references in ShaderChunks.</p>};
 }
 sub extras {
-return qq{<br><p>There are 164 instances of "endif" in ShaderChunks.</p>
+return qq{<br><p>There are 172 instances of "endif" in ShaderChunks.</p>
 <br><p>There are 85 ShaderChunks, of which the following are not currently in use.</p><br>};
 }
 sub todo {
@@ -163,6 +163,9 @@ return qq{<br><h3>To do</h3><div class="indented">
 <p>Indentation not robust in uniforms, could build them as ''chunk'' files first.</p>
 <p><del>Surplus code tags, affects styles</del></p></div>
 <br>
+<br><h3>4 Jul 2018</h3><div class="indented">
+<p>To version r94</p>
+<p>Update readme</p></div>
 <br><h3>18 Dec 2017</h3><div class="indented">
 <p>Make commented links live</p>
 <p>Index for index.html</p>

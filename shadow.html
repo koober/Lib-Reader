@@ -8,7 +8,7 @@
 	<script src="lib/highlight.pack.js"></script>
   </head>
   <body>
-	<h3><a href="https://threejs.org">three.js</a> <a href="https://github.com/mrdoob/three.js">R88</a></h3>
+	<h3><a href="https://threejs.org">three.js</a> <a href="https://github.com/mrdoob/three.js">R94</a></h3>
 	<br>
 <ul id="">
 <li><a href="cube.html#">cube</a></li>
@@ -190,6 +190,7 @@ gl_Position = projectionMatrix * mvPosition;
 
 	#if NUM_DIR_LIGHTS > 0
 
+	#pragma unroll_loop
 	for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {
 
 		vDirectionalShadowCoord[ i ] = directionalShadowMatrix[ i ] * worldPosition;
@@ -200,6 +201,7 @@ gl_Position = projectionMatrix * mvPosition;
 
 	#if NUM_SPOT_LIGHTS > 0
 
+	#pragma unroll_loop
 	for ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {
 
 		vSpotShadowCoord[ i ] = spotShadowMatrix[ i ] * worldPosition;
@@ -210,6 +212,7 @@ gl_Position = projectionMatrix * mvPosition;
 
 	#if NUM_POINT_LIGHTS > 0
 
+	#pragma unroll_loop
 	for ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {
 
 		vPointShadowCoord[ i ] = pointShadowMatrix[ i ] * worldPosition;
@@ -554,14 +557,9 @@ vec3 BRDF_Specular_GGX( const in IncidentLight incidentLight, const in Geometric
 
 // Rect Area Light
 
-// Area light computation code adapted from:
 // Real-Time Polygonal-Light Shading with Linearly Transformed Cosines
-// By: Eric Heitz, Jonathan Dupuy, Stephen Hill and David Neubelt
-// <a href="https://drive.google.com/file/d/0BzvWIdpUpRx_d09ndGVjNVJzZjA/view">https://drive.google.com/file/d/0BzvWIdpUpRx_d09ndGVjNVJzZjA/view</a>
-
-// <a href="https://eheitzresearch.wordpress.com/415-2/">https://eheitzresearch.wordpress.com/415-2/</a>
-
-// <a href="http://blog.selfshadow.com/sandbox/ltc.html">http://blog.selfshadow.com/sandbox/ltc.html</a>
+// by Eric Heitz, Jonathan Dupuy, Stephen Hill and David Neubelt
+// code: <a href="https://github.com/selfshadow/ltc_code/">https://github.com/selfshadow/ltc_code/</a>
 
 
 vec2 LTC_Uv( const in vec3 N, const in vec3 V, const in float roughness ) {
@@ -570,31 +568,21 @@ vec2 LTC_Uv( const in vec3 N, const in vec3 V, const in float roughness ) {
 	const float LUT_SCALE = ( LUT_SIZE - 1.0 ) / LUT_SIZE;
 	const float LUT_BIAS  = 0.5 / LUT_SIZE;
 
-	float theta = acos( dot( N, V ) );
+	float dotNV = saturate( dot( N, V ) );
 
-	// Parameterization of texture:
-	// sqrt(roughness) -> [0,1]
-	// theta -> [0, PI/2]
-	vec2 uv = vec2(
-		sqrt( saturate( roughness ) ),
-		saturate( theta / ( 0.5 * PI ) ) );
+	// texture parameterized by sqrt( GGX alpha ) and sqrt( 1 - cos( theta ) )
+	vec2 uv = vec2( roughness, sqrt( 1.0 - dotNV ) );
 
-	// Ensure we don't have nonlinearities at the look-up table's edges
-	// see: http://<a href="http.developer.nvidia.com/GPUGems2/gpugems2_chapter24.html">http.developer.nvidia.com/GPUGems2/gpugems2_chapter24.html</a>
-
-	//      "Shader Analysis" section
 	uv = uv * LUT_SCALE + LUT_BIAS;
 
 	return uv;
 
 }
 
-// Real-Time Area Lighting: a Journey from Research to Production
-// By: Stephen Hill & Eric Heitz
-// <a href="http://advances.realtimerendering.com/s2016/s2016_ltc_rnd.pdf">http://advances.realtimerendering.com/s2016/s2016_ltc_rnd.pdf</a>
-
-// An approximation for the form factor of a clipped rectangle.
 float LTC_ClippedSphereFormFactor( const in vec3 f ) {
+
+	// Real-Time Area Lighting: a Journey from Research to Production (p.102)
+	// An approximation of the form factor of a horizon-clipped rectangle.
 
 	float l = length( f );
 
@@ -602,22 +590,18 @@ float LTC_ClippedSphereFormFactor( const in vec3 f ) {
 
 }
 
-// Real-Time Polygonal-Light Shading with Linearly Transformed Cosines
-// also Real-Time Area Lighting: a Journey from Research to Production
-// <a href="http://advances.realtimerendering.com/s2016/s2016_ltc_rnd.pdf">http://advances.realtimerendering.com/s2016/s2016_ltc_rnd.pdf</a>
-
-// Normalization by 2*PI is incorporated in this function itself.
-// theta/sin(theta) is approximated by rational polynomial
 vec3 LTC_EdgeVectorFormFactor( const in vec3 v1, const in vec3 v2 ) {
 
 	float x = dot( v1, v2 );
 
 	float y = abs( x );
-	float a = 0.86267 + (0.49788 + 0.01436 * y ) * y;
-	float b = 3.45068 + (4.18814 + y) * y;
+
+	// rational polynomial approximation to theta / sin( theta ) / 2PI
+	float a = 0.8543985 + ( 0.4965155 + 0.0145206 * y ) * y;
+	float b = 3.4175940 + ( 4.1616724 + y ) * y;
 	float v = a / b;
 
-	float theta_sintheta = (x > 0.0) ? v : 0.5 * inversesqrt( 1.0 - x * x ) - v;
+	float theta_sintheta = ( x > 0.0 ) ? v : 0.5 * inversesqrt( max( 1.0 - x * x, 1e-7 ) ) - v;
 
 	return cross( v1, v2 ) * theta_sintheta;
 
@@ -636,7 +620,7 @@ vec3 LTC_Evaluate( const in vec3 N, const in vec3 V, const in vec3 P, const in m
 	// construct orthonormal basis around N
 	vec3 T1, T2;
 	T1 = normalize( V - N * dot( V, N ) );
-	T2 = - cross( N, T1 ); // negated from paper; possibly due to a different assumed handedness of world coordinate system
+	T2 = - cross( N, T1 ); // negated from paper; possibly due to a different handedness of world coordinate system
 
 	// compute transform
 	mat3 mat = mInv * transposeMat3( mat3( T1, T2, N ) );
@@ -662,9 +646,28 @@ vec3 LTC_Evaluate( const in vec3 N, const in vec3 V, const in vec3 P, const in m
 	vectorFormFactor += LTC_EdgeVectorFormFactor( coords[ 3 ], coords[ 0 ] );
 
 	// adjust for horizon clipping
-	vec3 result = vec3( LTC_ClippedSphereFormFactor( vectorFormFactor ) );
+	float result = LTC_ClippedSphereFormFactor( vectorFormFactor );
 
-	return result;
+/*
+	// alternate method of adjusting for horizon clipping (see referece)
+	// refactoring required
+	float len = length( vectorFormFactor );
+	float z = vectorFormFactor.z / len;
+
+	const float LUT_SIZE  = 64.0;
+	const float LUT_SCALE = ( LUT_SIZE - 1.0 ) / LUT_SIZE;
+	const float LUT_BIAS  = 0.5 / LUT_SIZE;
+
+	// tabulated horizon-clipped sphere, apparently...
+	vec2 uv = vec2( z * 0.5 + 0.5, len );
+	uv = uv * LUT_SCALE + LUT_BIAS;
+
+	float scale = texture2D( ltc_2, uv ).w;
+
+	float result = len * scale;
+*/
+
+	return vec3( result );
 
 }
 
@@ -735,7 +738,7 @@ float BlinnExponentToGGXRoughness( const in float blinnExponent ) {
 </code></pre></div>
 
 
-<input id="toggle20" type="checkbox"><label for="toggle20" class="">/* lights_pars.glsl */</label>
+<input id="toggle20" type="checkbox"><label for="toggle20" class="">/* lights_pars_begin.glsl */</label>
 <div id="expand20" class=" expand"><pre><code class="glsl">
 uniform vec3 ambientLightColor;
 
@@ -871,8 +874,8 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 
 	// Pre-computed values of LinearTransformedCosine approximation of BRDF
 	// BRDF approximation Texture is 64x64
-	uniform sampler2D ltcMat; // RGBA Float
-	uniform sampler2D ltcMag; // Alpha Float (only has w component)
+	uniform sampler2D ltc_1; // RGBA Float
+	uniform sampler2D ltc_2; // RGBA Float
 
 	uniform RectAreaLight rectAreaLights[ NUM_RECT_AREA_LIGHTS ];
 
@@ -903,142 +906,6 @@ vec3 getAmbientLightIrradiance( const in vec3 ambientLightColor ) {
 		#endif
 
 		return irradiance;
-
-	}
-
-#endif
-
-
-#if defined( USE_ENVMAP ) && defined( PHYSICAL )
-
-	vec3 getLightProbeIndirectIrradiance( /*const in SpecularLightProbe specularLightProbe,*/ const in GeometricContext geometry, const in int maxMIPLevel ) {
-
-		vec3 worldNormal = inverseTransformDirection( geometry.normal, viewMatrix );
-
-		#ifdef ENVMAP_TYPE_CUBE
-
-			vec3 queryVec = vec3( flipEnvMap * worldNormal.x, worldNormal.yz );
-
-			// TODO: replace with properly filtered cubemaps and access the irradiance LOD level, be it the last LOD level
-			// of a specular cubemap, or just the default level of a specially created irradiance cubemap.
-
-			#ifdef TEXTURE_LOD_EXT
-
-				vec4 envMapColor = textureCubeLodEXT( envMap, queryVec, float( maxMIPLevel ) );
-
-			#else
-
-				// force the bias high to get the last LOD level as it is the most blurred.
-				vec4 envMapColor = textureCube( envMap, queryVec, float( maxMIPLevel ) );
-
-			#endif
-
-			envMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;
-
-		#elif defined( ENVMAP_TYPE_CUBE_UV )
-
-			vec3 queryVec = vec3( flipEnvMap * worldNormal.x, worldNormal.yz );
-			vec4 envMapColor = textureCubeUV( queryVec, 1.0 );
-
-		#else
-
-			vec4 envMapColor = vec4( 0.0 );
-
-		#endif
-
-		return PI * envMapColor.rgb * envMapIntensity;
-
-	}
-
-	// taken from here: <a href="http://casual-effects.blogspot.ca/2011/08/plausible-environment-lighting-in-two.html">http://casual-effects.blogspot.ca/2011/08/plausible-environment-lighting-in-two.html</a>
-
-	float getSpecularMIPLevel( const in float blinnShininessExponent, const in int maxMIPLevel ) {
-
-		//float envMapWidth = pow( 2.0, maxMIPLevelScalar );
-		//float desiredMIPLevel = log2( envMapWidth * sqrt( 3.0 ) ) - 0.5 * log2( pow2( blinnShininessExponent ) + 1.0 );
-
-		float maxMIPLevelScalar = float( maxMIPLevel );
-		float desiredMIPLevel = maxMIPLevelScalar + 0.79248 - 0.5 * log2( pow2( blinnShininessExponent ) + 1.0 );
-
-		// clamp to allowable LOD ranges.
-		return clamp( desiredMIPLevel, 0.0, maxMIPLevelScalar );
-
-	}
-
-	vec3 getLightProbeIndirectRadiance( /*const in SpecularLightProbe specularLightProbe,*/ const in GeometricContext geometry, const in float blinnShininessExponent, const in int maxMIPLevel ) {
-
-		#ifdef ENVMAP_MODE_REFLECTION
-
-			vec3 reflectVec = reflect( -geometry.viewDir, geometry.normal );
-
-		#else
-
-			vec3 reflectVec = refract( -geometry.viewDir, geometry.normal, refractionRatio );
-
-		#endif
-
-		reflectVec = inverseTransformDirection( reflectVec, viewMatrix );
-
-		float specularMIPLevel = getSpecularMIPLevel( blinnShininessExponent, maxMIPLevel );
-
-		#ifdef ENVMAP_TYPE_CUBE
-
-			vec3 queryReflectVec = vec3( flipEnvMap * reflectVec.x, reflectVec.yz );
-
-			#ifdef TEXTURE_LOD_EXT
-
-				vec4 envMapColor = textureCubeLodEXT( envMap, queryReflectVec, specularMIPLevel );
-
-			#else
-
-				vec4 envMapColor = textureCube( envMap, queryReflectVec, specularMIPLevel );
-
-			#endif
-
-			envMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;
-
-		#elif defined( ENVMAP_TYPE_CUBE_UV )
-
-			vec3 queryReflectVec = vec3( flipEnvMap * reflectVec.x, reflectVec.yz );
-			vec4 envMapColor = textureCubeUV(queryReflectVec, BlinnExponentToGGXRoughness(blinnShininessExponent));
-
-		#elif defined( ENVMAP_TYPE_EQUIREC )
-
-			vec2 sampleUV;
-			sampleUV.y = asin( clamp( reflectVec.y, - 1.0, 1.0 ) ) * RECIPROCAL_PI + 0.5;
-			sampleUV.x = atan( reflectVec.z, reflectVec.x ) * RECIPROCAL_PI2 + 0.5;
-
-			#ifdef TEXTURE_LOD_EXT
-
-				vec4 envMapColor = texture2DLodEXT( envMap, sampleUV, specularMIPLevel );
-
-			#else
-
-				vec4 envMapColor = texture2D( envMap, sampleUV, specularMIPLevel );
-
-			#endif
-
-			envMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;
-
-		#elif defined( ENVMAP_TYPE_SPHERE )
-
-			vec3 reflectView = normalize( ( viewMatrix * vec4( reflectVec, 0.0 ) ).xyz + vec3( 0.0,0.0,1.0 ) );
-
-			#ifdef TEXTURE_LOD_EXT
-
-				vec4 envMapColor = texture2DLodEXT( envMap, reflectView.xy * 0.5 + 0.5, specularMIPLevel );
-
-			#else
-
-				vec4 envMapColor = texture2D( envMap, reflectView.xy * 0.5 + 0.5, specularMIPLevel );
-
-			#endif
-
-			envMapColor.rgb = envMapTexelToLinear( envMapColor ).rgb;
-
-		#endif
-
-		return envMapColor.rgb * envMapIntensity;
 
 	}
 
@@ -1307,6 +1174,7 @@ float getShadowMask() {
 
 	DirectionalLight directionalLight;
 
+	#pragma unroll_loop
 	for ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {
 
 		directionalLight = directionalLights[ i ];
@@ -1320,6 +1188,7 @@ float getShadowMask() {
 
 	SpotLight spotLight;
 
+	#pragma unroll_loop
 	for ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {
 
 		spotLight = spotLights[ i ];
@@ -1333,6 +1202,7 @@ float getShadowMask() {
 
 	PointLight pointLight;
 
+	#pragma unroll_loop
 	for ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {
 
 		pointLight = pointLights[ i ];

@@ -4,7 +4,7 @@
 }
 body {
 	color: #eee;
-	background-color: #1d1e1a;
+	background-color: #0d0e0a;
   font-family: monospace;
 }
 h2 {
@@ -21,6 +21,7 @@ label {
   border-left: 1px solid #333430;
   color: grey;
 }
+
 label:hover {
   color: #bbb;
 }
@@ -33,6 +34,9 @@ a:link, a:visited {
   text-decoration: none;
   border-bottom: 1px solid #555;
   color: #999;
+}
+a:active {
+  color: #bbb;
 }
 a:hover {
   color: #bbb;
@@ -50,6 +54,7 @@ ul {
 .expand {
   height: 0px;
   overflow: auto;
+    background-color: #1d1e1a;
   border-bottom: 1px solid #333430;
   border-left: 1px solid #333430;
   1margin-left: 1em;
