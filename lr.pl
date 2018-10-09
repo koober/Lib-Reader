@@ -3,8 +3,9 @@
 use strict;
 use warnings;
 use utf8;
-
-my $path = '../threejs94/src/renderers/shaders/';
+my $version = 97;
+my $versionurl = 'r' . $version . '/';
+my $path = '../threejs' . $version . '/src/renderers/shaders/';
 my $liburl = $path . 'ShaderLib/'; # also urls at line xxx, xxx and xxx.
 my @shaders;
 
@@ -22,20 +23,23 @@ sub rtrim { my $s = shift; $s =~ s/\s+$//; return $s };
 #sub  trim { my $s = shift; $s =~ s/^\s+|\s+$//g; return $s };
 
 opendir( DIR, $liburl );
-my @files = readdir( DIR );
+my @files = grep( /\.glsl$/, readdir( DIR ) );
 closedir( DIR );
+
 #make a list of shaders from glsl files
 foreach my $shader ( @files ) {
 	$shader = substr($shader, 0, -10 );
 	if ( ! grep( /$shader/, @shaders ) ) {
-		if(length($shader) > 2 ){
-			push( @shaders, $shader );
-		} # system (.)(..) files not wanted!
+		push( @shaders, $shader );
 	}
 }
-#create a set of dirty html files in temp folder
 
-mkdir $tempurl unless -d $tempurl; # Check if dir exists. If not create it.
+#create a set of dirty html files in temp folder
+if ( -d $tempurl) {
+    unlink glob $tempurl . '*.*';
+    rmdir $tempurl;
+}
+mkdir $tempurl; # Check if dir exists. If not create it.
 foreach( @shaders ) {
 	makeHTML( $_ );
 }
@@ -43,16 +47,16 @@ makeindex();
 
 #read from temp folder
 opendir( DIR, $tempurl );
-my @tempfiles = readdir( DIR );
+my @tempfiles = grep( /\.html$/, readdir( DIR ) );
 closedir( DIR );
 
 foreach my $tempfile ( @tempfiles ) {
     if ( ! grep( /$tempfile/, @tempshaders ) ) {
-        if(length($tempfile) > 2 ){
-            push( @tempshaders, $tempfile );
-        } # system (.)(..) files not wanted!
+        push( @tempshaders, $tempfile );
     }
 }
+
+mkdir $versionurl unless -d $versionurl;
 #write cleaned html to current folder
 foreach( @tempshaders ) {
     cleanHTML( $_ );
@@ -81,15 +85,14 @@ sub unusedchunks { #index list
 	my @leftchunks;
 	my $chunkurl = $path . 'ShaderChunk/';
 	opendir( DIR, $chunkurl );
-	my @chunkfiles = readdir( DIR );
+	my @chunkfiles = grep( /\.glsl$/, readdir( DIR ) );
 	closedir( DIR );
 
 	foreach( @chunkfiles ) {
-		if(length($_) > 2 ){
-			s/.glsl//;
-			push( @allchunks, $_ );
-		} # system (.)(..) files not wanted!
+		s/.glsl//;
+		push( @allchunks, $_ );  
 	}
+
 	foreach my $notdupe ( @allchunks ) {
 		if ( ! grep( /$notdupe/, @mostchunks ) ) {
 			push( @leftchunks, $notdupe );
@@ -100,7 +103,8 @@ sub unusedchunks { #index list
 
 sub cleanHTML {
     my $cleaned = shift;
-    open my $out_fh, '>', $cleaned  or die "Cannot write : $!\n";
+    #print $cleaned;
+    open my $out_fh, '>', $versionurl . $cleaned  or die "Cannot write : $!\n";
      
     my $file = $cleaned;
     my $data = slurp($file);
@@ -130,15 +134,18 @@ return qq{<!DOCTYPE html>
     <title>Lib Reader ( };
 }
 sub posttitle {
-return qq{ )</title>
+ my $first = qq{ )</title>
 	<meta charset="utf-8">
-	<link rel="stylesheet" type="text/css" href="css/tomorrow-night.css">
-	<link rel="stylesheet" type="text/css" href="css/styles.css">
-	<script src="lib/highlight.pack.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/tomorrow-night.css">
+	<link rel="stylesheet" type="text/css" href="../css/styles.css">
+	<script src="../lib/highlight.pack.js"></script>
   </head>
   <body>
-	<h3><a href="https://threejs.org">three.js</a> <a href="https://github.com/mrdoob/three.js">R94</a></h3>
+	<h3><a href="https://threejs.org">three.js</a> <a href="https://github.com/mrdoob/three.js">R};
+
+    my $last = qq{</a></h3>
 	<br>};
+    return $first . $version . $last;
 } 
 sub prefoot {
 return qq{<br><a href="https://koober.github.io/Lib-Reader/">Back to Index</a><br>};
@@ -163,6 +170,9 @@ return qq{<br><h3>To do</h3><div class="indented">
 <p>Indentation not robust in uniforms, could build them as ''chunk'' files first.</p>
 <p><del>Surplus code tags, affects styles</del></p></div>
 <br>
+<br><h3>4 Jul 2018</h3><div class="indented">
+<p>To version r97</p>
+<p>Add folders per version</p>
 <br><h3>4 Jul 2018</h3><div class="indented">
 <p>To version r94</p>
 <p>Update readme</p></div>
@@ -381,8 +391,8 @@ sub writeUniform {
         if( $line =~ $match  ) {
             push( @result, '{' . "\n" );
             $count = 1;
-        } elsif( substr( $line, 0, 1 ) =~ '}' && $match eq 'points:' ) {
-            $count = 0;
+        } elsif( substr( $line, 0, 1 ) =~ '}' && $match eq 'sprite:' ) {
+            $count = 0;# HACK: 'sprite' is last in uniformsLib after r94, previously 'points'
         } elsif( substr( $line, 0, 2 ) =~ '},'  ) {
             $count = 0;
 
