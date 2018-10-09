@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Lib Reader ( EQUIRECT )</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="../css/tomorrow-night.css">
+	<link rel="stylesheet" type="text/css" href="../css/styles.css">
+	<script src="../lib/highlight.pack.js"></script>
+  </head>
+  <body>
+	<h3><a href="https://threejs.org">three.js</a> <a href="https://github.com/mrdoob/three.js">R97</a></h3>
+	<br>
+<ul id="">
+<li><a href="background.html#">background</a></li>
+<li><a href="cube.html#">cube</a></li>
+<li><a href="depth.html#">depth</a></li>
+<li><a href="distanceRGBA.html#">distanceRGBA</a></li>
+<li><a href="equirect.html#">equirect</a></li>
+<li><a href="linedashed.html#">linedashed</a></li>
+<li><a href="meshbasic.html#">meshbasic</a></li>
+<li><a href="meshlambert.html#">meshlambert</a></li>
+<li><a href="meshmatcap.html#">meshmatcap</a></li>
+<li><a href="meshphong.html#">meshphong</a></li>
+<li><a href="meshphysical.html#">meshphysical/standard</a></li>
+<li><a href="normal.html#">normal</a></li>
+<li><a href="points.html#">points</a></li>
+<li><a href="shadow.html#">shadow</a></li>
+<li><a href="sprite.html#">sprite</a></li>
+</ul>
+
+
+<h2>equirect.uniforms</h2>
+
+	<pre><code class='javascript'>uniforms: {
+	tEquirect: { value: null },
+}
+	</code></pre>
+
+
+<h2>equirect_vert.glsl</h2>
+
+<pre><code class="glsl">varying vec3 vWorldPosition;
+
+</code></pre>
+
+<input id="toggle4" type="checkbox"><label for="toggle4" class="">/* common.glsl */</label>
+<div id="expand4" class=" expand"><pre><code class="glsl">
+#define PI 3.14159265359
+#define PI2 6.28318530718
+#define PI_HALF 1.5707963267949
+#define RECIPROCAL_PI 0.31830988618
+#define RECIPROCAL_PI2 0.15915494
+#define LOG2 1.442695
+#define EPSILON 1e-6
+
+#define saturate(a) clamp( a, 0.0, 1.0 )
+#define whiteCompliment(a) ( 1.0 - saturate( a ) )
+
+float pow2( const in float x ) { return x*x; }
+float pow3( const in float x ) { return x*x*x; }
+float pow4( const in float x ) { float x2 = x*x; return x2*x2; }
+float average( const in vec3 color ) { return dot( color, vec3( 0.3333 ) ); }
+// expects values in the range of [0,1]x[0,1], returns values in the [0,1] range.
+// do not collapse into a single function per: <a href="http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/">http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/</a>
+
+highp float rand( const in vec2 uv ) {
+	const highp float a = 12.9898, b = 78.233, c = 43758.5453;
+	highp float dt = dot( uv.xy, vec2( a,b ) ), sn = mod( dt, PI );
+	return fract(sin(sn) * c);
+}
+
+struct IncidentLight {
+	vec3 color;
+	vec3 direction;
+	bool visible;
+};
+
+struct ReflectedLight {
+	vec3 directDiffuse;
+	vec3 directSpecular;
+	vec3 indirectDiffuse;
+	vec3 indirectSpecular;
+};
+
+struct GeometricContext {
+	vec3 position;
+	vec3 normal;
+	vec3 viewDir;
+};
+
+vec3 transformDirection( in vec3 dir, in mat4 matrix ) {
+
+	return normalize( ( matrix * vec4( dir, 0.0 ) ).xyz );
+
+}
+
+// <a href="http://en.wikibooks.org/wiki/GLSL_Programming/Applying_Matrix_Transformations">http://en.wikibooks.org/wiki/GLSL_Programming/Applying_Matrix_Transformations</a>
+
+vec3 inverseTransformDirection( in vec3 dir, in mat4 matrix ) {
+
+	return normalize( ( vec4( dir, 0.0 ) * matrix ).xyz );
+
+}
+
+vec3 projectOnPlane(in vec3 point, in vec3 pointOnPlane, in vec3 planeNormal ) {
+
+	float distance = dot( planeNormal, point - pointOnPlane );
+
+	return - distance * planeNormal + point;
+
+}
+
+float sideOfPlane( in vec3 point, in vec3 pointOnPlane, in vec3 planeNormal ) {
+
+	return sign( dot( point - pointOnPlane, planeNormal ) );
+
+}
+
+vec3 linePlaneIntersect( in vec3 pointOnLine, in vec3 lineDirection, in vec3 pointOnPlane, in vec3 planeNormal ) {
+
+	return lineDirection * ( dot( planeNormal, pointOnPlane - pointOnLine ) / dot( planeNormal, lineDirection ) ) + pointOnLine;
+
+}
+
+mat3 transposeMat3( const in mat3 m ) {
+
+	mat3 tmp;
+
+	tmp[ 0 ] = vec3( m[ 0 ].x, m[ 1 ].x, m[ 2 ].x );
+	tmp[ 1 ] = vec3( m[ 0 ].y, m[ 1 ].y, m[ 2 ].y );
+	tmp[ 2 ] = vec3( m[ 0 ].z, m[ 1 ].z, m[ 2 ].z );
+
+	return tmp;
+
+}
+
+// <a href="https://en.wikipedia.org/wiki/Relative_luminance">https://en.wikipedia.org/wiki/Relative_luminance</a>
+
+float linearToRelativeLuminance( const in vec3 color ) {
+
+	vec3 weights = vec3( 0.2126, 0.7152, 0.0722 );
+
+	return dot( weights, color.rgb );
+
+}
+</code></pre></div>
+<pre><code class="glsl">
+void main() {
+</code></pre>
+<pre><code class="glsl">
+	vWorldPosition = transformDirection( position, modelMatrix );
+
+</code></pre>
+
+<input id="toggle5" type="checkbox"><label for="toggle5" class="indented">/* begin_vertex.glsl */</label>
+<div id="expand5" class="indented expand"><pre><code class="glsl">
+
+vec3 transformed = vec3( position );
+</code></pre></div>
+
+
+<input id="toggle6" type="checkbox"><label for="toggle6" class="indented">/* project_vertex.glsl */</label>
+<div id="expand6" class="indented expand"><pre><code class="glsl">
+vec4 mvPosition = modelViewMatrix * vec4( transformed, 1.0 );
+
+gl_Position = projectionMatrix * mvPosition;
+</code></pre></div>
+<pre><code class="glsl">
+}
+</code></pre>
+<ul id="frag">
+<li><a href="background.html#frag">background</a></li>
+<li><a href="cube.html#frag">cube</a></li>
+<li><a href="depth.html#frag">depth</a></li>
+<li><a href="distanceRGBA.html#frag">distanceRGBA</a></li>
+<li><a href="equirect.html#frag">equirect</a></li>
+<li><a href="linedashed.html#frag">linedashed</a></li>
+<li><a href="meshbasic.html#frag">meshbasic</a></li>
+<li><a href="meshlambert.html#frag">meshlambert</a></li>
+<li><a href="meshmatcap.html#frag">meshmatcap</a></li>
+<li><a href="meshphong.html#frag">meshphong</a></li>
+<li><a href="meshphysical.html#frag">meshphysical/standard</a></li>
+<li><a href="normal.html#frag">normal</a></li>
+<li><a href="points.html#frag">points</a></li>
+<li><a href="shadow.html#frag">shadow</a></li>
+<li><a href="sprite.html#frag">sprite</a></li>
+</ul>
+
+
+<h2>equirect_frag.glsl</h2>
+
+<pre><code class="glsl">uniform sampler2D tEquirect;
+
+varying vec3 vWorldPosition;
+
+</code></pre>
+
+<input id="toggle7" type="checkbox"><label for="toggle7" class="">/* common.glsl */</label>
+<div id="expand7" class=" expand"><pre><code class="glsl">
+#define PI 3.14159265359
+#define PI2 6.28318530718
+#define PI_HALF 1.5707963267949
+#define RECIPROCAL_PI 0.31830988618
+#define RECIPROCAL_PI2 0.15915494
+#define LOG2 1.442695
+#define EPSILON 1e-6
+
+#define saturate(a) clamp( a, 0.0, 1.0 )
+#define whiteCompliment(a) ( 1.0 - saturate( a ) )
+
+float pow2( const in float x ) { return x*x; }
+float pow3( const in float x ) { return x*x*x; }
+float pow4( const in float x ) { float x2 = x*x; return x2*x2; }
+float average( const in vec3 color ) { return dot( color, vec3( 0.3333 ) ); }
+// expects values in the range of [0,1]x[0,1], returns values in the [0,1] range.
+// do not collapse into a single function per: <a href="http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/">http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/</a>
+
+highp float rand( const in vec2 uv ) {
+	const highp float a = 12.9898, b = 78.233, c = 43758.5453;
+	highp float dt = dot( uv.xy, vec2( a,b ) ), sn = mod( dt, PI );
+	return fract(sin(sn) * c);
+}
+
+struct IncidentLight {
+	vec3 color;
+	vec3 direction;
+	bool visible;
+};
+
+struct ReflectedLight {
+	vec3 directDiffuse;
+	vec3 directSpecular;
+	vec3 indirectDiffuse;
+	vec3 indirectSpecular;
+};
+
+struct GeometricContext {
+	vec3 position;
+	vec3 normal;
+	vec3 viewDir;
+};
+
+vec3 transformDirection( in vec3 dir, in mat4 matrix ) {
+
+	return normalize( ( matrix * vec4( dir, 0.0 ) ).xyz );
+
+}
+
+// <a href="http://en.wikibooks.org/wiki/GLSL_Programming/Applying_Matrix_Transformations">http://en.wikibooks.org/wiki/GLSL_Programming/Applying_Matrix_Transformations</a>
+
+vec3 inverseTransformDirection( in vec3 dir, in mat4 matrix ) {
+
+	return normalize( ( vec4( dir, 0.0 ) * matrix ).xyz );
+
+}
+
+vec3 projectOnPlane(in vec3 point, in vec3 pointOnPlane, in vec3 planeNormal ) {
+
+	float distance = dot( planeNormal, point - pointOnPlane );
+
+	return - distance * planeNormal + point;
+
+}
+
+float sideOfPlane( in vec3 point, in vec3 pointOnPlane, in vec3 planeNormal ) {
+
+	return sign( dot( point - pointOnPlane, planeNormal ) );
+
+}
+
+vec3 linePlaneIntersect( in vec3 pointOnLine, in vec3 lineDirection, in vec3 pointOnPlane, in vec3 planeNormal ) {
+
+	return lineDirection * ( dot( planeNormal, pointOnPlane - pointOnLine ) / dot( planeNormal, lineDirection ) ) + pointOnLine;
+
+}
+
+mat3 transposeMat3( const in mat3 m ) {
+
+	mat3 tmp;
+
+	tmp[ 0 ] = vec3( m[ 0 ].x, m[ 1 ].x, m[ 2 ].x );
+	tmp[ 1 ] = vec3( m[ 0 ].y, m[ 1 ].y, m[ 2 ].y );
+	tmp[ 2 ] = vec3( m[ 0 ].z, m[ 1 ].z, m[ 2 ].z );
+
+	return tmp;
+
+}
+
+// <a href="https://en.wikipedia.org/wiki/Relative_luminance">https://en.wikipedia.org/wiki/Relative_luminance</a>
+
+float linearToRelativeLuminance( const in vec3 color ) {
+
+	vec3 weights = vec3( 0.2126, 0.7152, 0.0722 );
+
+	return dot( weights, color.rgb );
+
+}
+</code></pre></div>
+<pre><code class="glsl">
+void main() {
+</code></pre>
+<pre><code class="glsl">
+	vec3 direction = normalize( vWorldPosition );
+
+	vec2 sampleUV;
+
+	sampleUV.y = asin( clamp( direction.y, - 1.0, 1.0 ) ) * RECIPROCAL_PI + 0.5;
+
+	sampleUV.x = atan( direction.z, direction.x ) * RECIPROCAL_PI2 + 0.5;
+
+	gl_FragColor = texture2D( tEquirect, sampleUV );
+
+}
+</code></pre>
+<br><a href="https://koober.github.io/Lib-Reader/">Back to Index</a><br><br><a href="https://github.com/koober/Lib-Reader/">Source</a>
+<br><br><script>hljs.initHighlightingOnLoad();</script>
+</body></html>
