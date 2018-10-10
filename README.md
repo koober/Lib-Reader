@@ -1,4 +1,4 @@
-#ShaderLib Reader#
+# ShaderLib Reader
 
 Auto-generated snapshot of three.js ShaderLib.
 
