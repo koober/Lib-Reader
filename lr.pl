@@ -35,11 +35,11 @@ foreach my $shader ( @files ) {
 }
 
 #create a set of dirty html files in temp folder
-if ( -d $tempurl) {
+if ( -d $tempurl) {# Check if dir exists, empty and remove
     unlink glob $tempurl . '*.*';
     rmdir $tempurl;
 }
-mkdir $tempurl; # Check if dir exists. If not create it.
+mkdir $tempurl; # create it.
 foreach( @shaders ) {
 	makeHTML( $_ );
 }
@@ -103,7 +103,7 @@ sub unusedchunks { #index list
 
 sub cleanHTML {
     my $cleaned = shift;
-    #print $cleaned;
+
     open my $out_fh, '>', $versionurl . $cleaned  or die "Cannot write : $!\n";
      
     my $file = $cleaned;
@@ -160,8 +160,7 @@ return qq{<br><h1>Lib Reader</h1>
 <br><p>Displays the contents of ShaderLib in three.js, including links to contextual references in ShaderChunks.</p>};
 }
 sub extras {
-return qq{<br><p>There are 172 instances of "endif" in ShaderChunks.</p>
-<br><p>There are 85 ShaderChunks, of which the following are not currently in use.</p><br>};
+return qq{<br><p>The following chunks are not shown elsewhere.</p><br>};
 }
 sub todo {
 return qq{<br><h3>To do</h3><div class="indented">
@@ -170,9 +169,9 @@ return qq{<br><h3>To do</h3><div class="indented">
 <p>Indentation not robust in uniforms, could build them as ''chunk'' files first.</p>
 <p><del>Surplus code tags, affects styles</del></p></div>
 <br>
-<br><h3>4 Jul 2018</h3><div class="indented">
+<br><h3>9 Oct 2018</h3><div class="indented">
 <p>To version r97</p>
-<p>Add folders per version</p>
+<p>Add folders per version</p></div>
 <br><h3>4 Jul 2018</h3><div class="indented">
 <p>To version r94</p>
 <p>Update readme</p></div>
@@ -206,10 +205,10 @@ sub makeindex {
 
 	print $HTML navmenu( '' );
 	#==============================
-	print $HTML intro() . '<div class="indented">' . httplinks() . '</div>' . extras();
-	print $HTML writeChunk( 'encodings_pars_fragment.glsl', '' );
-	$includeCount += 1;
-	print $HTML writeChunk( 'tonemapping_pars_fragment.glsl', '' );
+	print $HTML intro() . '<div class="indented">' . httplinks() . '</div>';# . extras();
+	#print $HTML writeChunk( 'encodings_pars_fragment.glsl', '' );
+	#$includeCount += 1;
+	#print $HTML writeChunk( 'tonemapping_pars_fragment.glsl', '' );
 	print $HTML todo();
 	#==============================
 	print $HTML footer(); # not prefoot()
@@ -280,6 +279,7 @@ sub readUniforms {
 
         $glslFile = 'standard';
     }
+
     open my $IN, '<', $uniFile or die 'Failed to open' . $uniFile . '.html';
     push( @result, "\n" . "\n" . '<h2>' . $glslFile . '.uniforms</h2>' . "\n" . "\n" );
     
@@ -291,6 +291,10 @@ sub readUniforms {
         
         if( $line =~ $match ) {
             $count = 1;
+            if( $line =~ 'matcap: \{ value' ) {
+                #print $line; # HACK! property same as filename
+                push( @result,  "\t" . "\t" . $line );
+            }
         } elsif( $line =~ 'vertexShader:' ) {
             $count = 0;
         } elsif( $count ) {
@@ -337,7 +341,7 @@ sub readUniforms {
                 push( @result, '<pre><code class="javascript">' );
 
             } elsif( $match eq 'cube:' || $match eq 'equirect:' ) {
-                    push( @result,  "\t" .  $line );
+                push( @result,  "\t" .  $line );
             } else {
                 push( @result,  "\t" . "\t" . $line );
             }
@@ -395,14 +399,13 @@ sub writeUniform {
             $count = 0;# HACK: 'sprite' is last in uniformsLib after r94, previously 'points'
         } elsif( substr( $line, 0, 2 ) =~ '},'  ) {
             $count = 0;
-
+            
         } elsif( $count ) {
             if( $line =~ $prop && $match eq 'lights:') {
                 $pcount = 1;
                 push( @result, "\t" . $line );
             } elsif(  substr( $line, 0, 3 ) =~ '} }' && $match eq 'lights:' ) {
                 $pcount = 0;
-                #print $HTML "\t" . $line;
             }
             next if $line =~ /^$/;
             if( $pcount ) {
